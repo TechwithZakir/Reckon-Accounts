@@ -164,6 +164,9 @@ class LedgerAdapter:
             if companies and filters.company not in companies:
                 raise ScopeError("Fiscal Year does not apply to the selected company")
 
+        if filters.mode_of_payment:
+            self.permissions.require("Mode of Payment", filters.mode_of_payment)
+
         # Configuration metadata only, never accounting amounts or party names.
         definitions = self.frappe.get_all(
             "Accounting Dimension",
@@ -319,6 +322,25 @@ class LedgerAdapter:
                 _required(source, ("payment_type",))
                 if source["payment_type"] != filters.payment_type:
                     continue
+            if filters.mode_of_payment or filters.reference_no:
+                if row["voucher_type"] not in {
+                    "Payment Entry",
+                    "Journal Entry",
+                    "Sales Invoice",
+                    "Purchase Invoice",
+                }:
+                    continue
+                reference_field = (
+                    "cheque_no" if row["voucher_type"] == "Journal Entry" else "reference_no"
+                )
+                selected_fields = {
+                    "mode_of_payment": filters.mode_of_payment,
+                    reference_field: filters.reference_no,
+                }
+                if any(
+                    value and source.get(field) != value for field, value in selected_fields.items()
+                ):
+                    continue
             if filters.currency_mode == "account" and row["account_currency"] != currency:
                 raise ScopeError("GL account currencies are inconsistent")
             permitted.append(row)
@@ -361,6 +383,15 @@ class LedgerAdapter:
                     voucher_no=row["voucher_no"],
                     voucher_label=voucher_label(row["voucher_type"], source),
                     remarks=str(row.get("remarks") or ""),
+                    mode_of_payment=str(source.get("mode_of_payment") or ""),
+                    reference_no=str(
+                        source.get(
+                            "cheque_no"
+                            if row["voucher_type"] == "Journal Entry"
+                            else "reference_no"
+                        )
+                        or ""
+                    ),
                     particulars=permitted_particulars(
                         row, peers[(row["voucher_type"], row["voucher_no"])], account_titles
                     ),

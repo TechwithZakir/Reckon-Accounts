@@ -7,7 +7,7 @@
  "public": 1,
  "is_hidden": 0,
  "icon": "accounting",
- "sequence_id": 5,
+ "sequence_id": 6,
  "parent_page": "Reckon Accounts",
  "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Financial Statements\", \"col\": 4}}]",
  "links": [

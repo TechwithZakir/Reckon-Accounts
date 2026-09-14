@@ -3,10 +3,18 @@
 import json
 
 GROUPS = (
+    ("Voucher Entry", "Page", ("voucher-entry",)),
     (
         "Ledgers",
         "Report",
-        ("Party Ledger", "Account Ledger", "General Ledger Custom", "Ledger Monthly Summary"),
+        (
+            "Party Ledger",
+            "Account Ledger",
+            "Account Head Wise Party Ledger",
+            "Party Summary",
+            "General Ledger Custom",
+            "Ledger Monthly Summary",
+        ),
     ),
     (
         "Cash and Bank",
@@ -109,7 +117,7 @@ def workspace_documents():
             links.extend(
                 {
                     "type": "Link",
-                    "label": name,
+                    "label": "Voucher Entry" if name == "voucher-entry" else name,
                     "link_type": link_type,
                     "link_to": name,
                     "is_query_report": int(link_type == "Report"),
@@ -122,7 +130,7 @@ def workspace_documents():
         return {
             "doctype": "Workspace",
             "name": name,
-            "label": name,
+            "label": "Voucher Entry" if name == "voucher-entry" else name,
             "title": name,
             "module": "Reckon Accounts",
             "public": 1,
@@ -172,7 +180,13 @@ def sidebar_document():
             }
         )
         items.extend(
-            {"type": "Link", "label": name, "link_type": link_type, "link_to": name, "child": 1}
+            {
+                "type": "Link",
+                "label": "Voucher Entry" if name == "voucher-entry" else name,
+                "link_type": link_type,
+                "link_to": name,
+                "child": 1,
+            }
             for name in names
         )
     return {

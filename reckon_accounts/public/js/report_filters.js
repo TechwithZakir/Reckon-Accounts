@@ -33,6 +33,8 @@ reckon_accounts.report_settings = function (report_name) {
             options: "voucher_type", get_query: () => search("voucher_no"), depends_on: "voucher_type"},
         {fieldname: "payment_type", label: __("Payment Type"), fieldtype: "Select",
             options: ["", "Receive", "Pay", "Internal Transfer"]},
+        link("mode_of_payment", "Mode of Payment", "Mode of Payment"),
+        {fieldname: "reference_no", label: __("Cheque / Reference"), fieldtype: "Data"},
         link("finance_book", "Finance Book", "Finance Book"),
         {fieldname: "include_default_book_entries", label: __("Include Default Book Entries"),
             fieldtype: "Check", default: 0},
@@ -48,6 +50,13 @@ reckon_accounts.report_settings = function (report_name) {
     if (report_name === "Funds Flow") {
         filters.push(link("current_assets_group", "Current Assets Group", "Account"));
         filters.push(link("current_liabilities_group", "Current Liabilities Group", "Account"));
+    }
+    if (report_name === "Party Summary") {
+        filters.push(link("customer_group", "Customer Group", "Customer Group"));
+        filters.push(link("supplier_group", "Supplier Group", "Supplier Group"));
+        filters.push(link("territory", "Territory", "Territory"));
+        filters.push({fieldname: "group_by", label: __("Group By"), fieldtype: "Select",
+            options: ["Party", "Party Type", "Account Head", "customer_group", "supplier_group", "territory"], default: "Party"});
     }
     // Changing a balance filter returns to page 1; paging itself keeps the scope.
     for (const filter of filters) {
@@ -76,6 +85,23 @@ reckon_accounts.report_settings = function (report_name) {
     return {
         filters,
         async onload(report) {
+            const entries = {
+                "Receipt Register": ["Payment Entry", "payment_type", "Receive"],
+                "Payment Register": ["Payment Entry", "payment_type", "Pay"],
+                "Contra Register": ["Payment Entry", "payment_type", "Internal Transfer"],
+                "Journal Register": ["Journal Entry", "voucher_type", "Journal Entry"],
+            };
+            const entry = entries[report_name];
+            if (entry && frappe.model.can_create(entry[0])) {
+                report.page.add_inner_button(__("New Entry"), () => {
+                    const company = report.get_filter_value("company");
+                    if (!company) {
+                        frappe.msgprint(__("Select Company before creating an entry."));
+                        return;
+                    }
+                    frappe.new_doc(entry[0], {company, [entry[1]]: entry[2]});
+                });
+            }
             const options = await frappe.xcall(api + "filter_options", {report_name});
             const partyControl = report.get_filter("party_type");
             const selected = partyControl.get_value();
@@ -140,6 +166,32 @@ reckon_accounts.report_settings = function (report_name) {
         },
         formatter(value, row, column, data, default_formatter) {
             const safe = frappe.utils.escape_html(String(value ?? ""));
+            if (column.fieldname === "party_name" && data?.row_kind === "party_summary") {
+                const scope = {...frappe.query_report.get_filter_values(), account: data.account,
+                    party_type: data.party_type || "", party: data.party || "", page: 1};
+                for (const key of ["customer_group", "supplier_group", "territory", "group_by"]) delete scope[key];
+                if (!data.party) scope.only_entries_without_party = 1;
+                const query = new URLSearchParams();
+                for (const [key, selected] of Object.entries(scope)) {
+                    if (selected !== null && selected !== undefined) query.set(key, String(selected));
+                }
+                const href = "/app/query-report/" + encodeURIComponent("Party Ledger") + "?" + query;
+                return `<a href="${frappe.utils.escape_html(href)}">${safe}</a>`;
+            }
+            if (column.fieldname === "description" && data?.row_kind === "monthly") {
+                const scope = {...frappe.query_report.get_filter_values(),
+                    from_date: data.posting_date, to_date: data.period_end, page: 1};
+                if (data.account) scope.account = data.account;
+                delete scope.current_assets_group;
+                delete scope.current_liabilities_group;
+                const target = report_name === "Group Monthly Summary" ? "Group Vouchers" : "Account Ledger";
+                const query = new URLSearchParams();
+                for (const [key, selected] of Object.entries(scope)) {
+                    if (selected !== null && selected !== undefined) query.set(key, String(selected));
+                }
+                const href = "/app/query-report/" + encodeURIComponent(target) + "?" + query;
+                return `<a href="${frappe.utils.escape_html(href)}">${safe}</a>`;
+            }
             if (["party_heading", "account_heading"].includes(data?.row_kind)) {
                 return column.fieldname === "description" ? `<strong>${safe}</strong>` : "";
             }
@@ -156,7 +208,7 @@ reckon_accounts.report_settings = function (report_name) {
                 for (const [key, selected] of Object.entries(scope)) {
                     if (selected !== null && selected !== undefined) query.set(key, String(selected));
                 }
-                const target = report_name === "Group Summary" && data.is_group ? "Group Summary" : "Account Ledger";
+                const target = report_name === "Group Summary" && data.is_group ? "Group Summary" : report_name === "Bank Summary" ? "Bank Book" : "Account Ledger";
                 // A group summary may be drilled into until it reaches one ledger account.
                 const href = "/app/query-report/" + encodeURIComponent(target) + "?" + query;
                 return `<a href="${frappe.utils.escape_html(href)}">${safe}</a>`;

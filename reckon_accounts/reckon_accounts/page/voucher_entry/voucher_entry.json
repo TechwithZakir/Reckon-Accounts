@@ -1,0 +1,19 @@
+{
+ "doctype": "Page",
+ "name": "voucher-entry",
+ "page_name": "voucher-entry",
+ "title": "Voucher Entry",
+ "module": "Reckon Accounts",
+ "standard": "Yes",
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ]
+}

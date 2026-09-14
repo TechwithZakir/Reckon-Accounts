@@ -22,6 +22,8 @@ class LedgerFilters:
     voucher_type: str | None = None
     voucher_no: str | None = None
     payment_type: str | None = None
+    mode_of_payment: str | None = None
+    reference_no: str | None = None
     fiscal_year: str | None = None
     finance_book: str | None = None
     include_default_book_entries: bool = False
@@ -57,6 +59,8 @@ class LedgerFilters:
                 "voucher_type",
                 "voucher_no",
                 "payment_type",
+                "mode_of_payment",
+                "reference_no",
                 "only_entries_without_party",
                 "currency_mode",
                 "finance_book",
@@ -113,6 +117,8 @@ def parse_ledger_filters(values: Mapping) -> LedgerFilters:
             "voucher_type",
             "voucher_no",
             "payment_type",
+            "mode_of_payment",
+            "reference_no",
             "fiscal_year",
             "finance_book",
         )

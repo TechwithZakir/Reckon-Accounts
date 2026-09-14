@@ -36,6 +36,8 @@ class Posting:
     is_opening: bool = False
     account_root_type: str = ""
     account_name: str = ""
+    mode_of_payment: str = ""
+    reference_no: str = ""
 
     def __post_init__(self):
         if not self.name or not self.account:
@@ -141,7 +143,10 @@ def build_ledger(
             ignore_opening_check or not posting.is_opening
         ):
             continue
-        group_party = REPORTS[report_name] in {"party", "general"} and filters.party_type != "Other"
+        group_party = (
+            REPORTS[report_name] in {"party", "general", "account_party", "party_summary"}
+            and filters.party_type != "Other"
+        )
         key = (
             posting.account,
             posting.party_type if group_party else "",
@@ -168,7 +173,10 @@ def build_ledger(
             running += row.debit - row.credit
             movements.append(Movement(row, round_amount(running)))
         title = records[0].party_name or key[2] or "Entries without party"
-        if REPORTS[report_name] not in {"party", "general"} or filters.party_type == "Other":
+        if (
+            REPORTS[report_name] not in {"party", "general", "account_party", "party_summary"}
+            or filters.party_type == "Other"
+        ):
             title = "Entries without party" if filters.only_entries_without_party else "All parties"
         sections.append(
             Section(
@@ -238,6 +246,8 @@ def display_rows(result: LedgerResult, *, full: bool = False) -> list[dict]:
                 voucher_type=posting.voucher_type,
                 voucher_no=posting.voucher_no,
                 voucher_label=posting.voucher_label,
+                mode_of_payment=posting.mode_of_payment,
+                reference_no=posting.reference_no,
                 debit=posting.debit,
                 credit=posting.credit,
                 balance=movement.running,

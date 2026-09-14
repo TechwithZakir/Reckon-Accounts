@@ -2,13 +2,15 @@
 
 Updated 2026-09-14. Source implementations, pending live ERPNext 15/16 acceptance.
 
-All 23 custom Report records use module **Reckon Accounts**, with prefix-free names.
+All 25 custom Report records use module **Reckon Accounts**, with prefix-free names.
 General Ledger Custom retains the existing Tally-oriented ledger presentation
 without taking the name of the standard ERPNext General Ledger.
 
 ## Custom views
 
 - Party Ledger
+- Account Head Wise Party Ledger
+- Party Summary
 - Account Ledger
 - General Ledger Custom
 - Day Book

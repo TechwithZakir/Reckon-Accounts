@@ -17,6 +17,21 @@
   },
   {
    "type": "Section Break",
+   "label": "Voucher Entry",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
+  },
+  {
+   "type": "Link",
+   "label": "Voucher Entry",
+   "link_type": "Page",
+   "link_to": "voucher-entry",
+   "child": 1
+  },
+  {
+   "type": "Section Break",
    "label": "Ledgers",
    "child": 0,
    "collapsible": 1,
@@ -35,6 +50,20 @@
    "label": "Account Ledger",
    "link_type": "Report",
    "link_to": "Account Ledger",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Account Head Wise Party Ledger",
+   "link_type": "Report",
+   "link_to": "Account Head Wise Party Ledger",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Party Summary",
+   "link_type": "Report",
+   "link_to": "Party Summary",
    "child": 1
   },
   {

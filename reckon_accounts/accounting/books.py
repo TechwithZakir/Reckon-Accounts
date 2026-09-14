@@ -162,13 +162,16 @@ def group_summary_units(ledger, permissions):
                 break
             child = parent
         if child not in grouped:
+            child_record = permissions.require("Account", child)
+            title = child_record.get("account_name") or child
             grouped[child] = row(
                 ledger,
                 "summary",
-                child,
+                title,
                 account=child,
+                account_name=title,
                 opening=Decimal(0),
-                is_group=bool(permissions.require("Account", child).get("is_group")),
+                is_group=bool(child_record.get("is_group")),
                 debit=Decimal(0),
                 credit=Decimal(0),
                 balance=Decimal(0),
@@ -226,6 +229,8 @@ def voucher_units(ledger, selected_keys=None):
                         voucher_type=doctype,
                         voucher_no=name,
                         voucher_label=posting.voucher_label,
+                        mode_of_payment=posting.mode_of_payment,
+                        reference_no=posting.reference_no,
                         debit=posting.debit,
                         credit=posting.credit,
                         remarks=posting.remarks,
@@ -248,6 +253,15 @@ def voucher_units(ledger, selected_keys=None):
 
 def make_book(ledger, *, page=1, selected_keys=None, current_assets=None, current_liabilities=None):
     kind = BOOK_REPORTS[ledger.report_name]
+    if kind in {"monthly", "group_monthly", "negative_cash", "exceptions"} and any(
+        movement.posting.posting_date > ledger.filters.to_date
+        for section in ledger.sections
+        for movement in section.movements
+    ):
+        raise ValueError(
+            "Opening vouchers after To Date cannot be shown as dated movement in this report. "
+            "Turn off Show Opening Vouchers as Movement, or extend To Date."
+        )
     notice = "All values cover permitted records only. Refresh recalculates backdated postings."
     units = []
     if kind in VOUCHER_VIEWS:
@@ -271,6 +285,25 @@ def make_book(ledger, *, page=1, selected_keys=None, current_assets=None, curren
         else:
             units = voucher_units(ledger, selected_keys)
             notice += " Pagination keeps voucher lines together. Source permissions may restrict visible lines; no completeness claim is made."
+    elif kind in {"account_party", "party_summary"}:
+        units = [
+            (
+                row(
+                    ledger,
+                    "party_summary",
+                    section.party_heading,
+                    account=section.account,
+                    party_type=section.key[1],
+                    party=section.key[2],
+                    party_name=section.party_heading,
+                    opening=section.opening,
+                    debit=section.debit,
+                    credit=section.credit,
+                    balance=section.closing,
+                ),
+            )
+            for section in ledger.sections
+        ]
     elif kind in {"monthly", "group_monthly"}:
         units = group_monthly_rows(ledger) if kind == "group_monthly" else monthly_rows(ledger)
         notice += " Months without movement retain their carried balance. Account rows are not double-counted across hierarchy levels."
@@ -403,6 +436,12 @@ def run_book(adapter, report_name, filters, *, full=False, export=False):
     from reckon_accounts.accounting.filters import parse_ledger_filters
 
     filters = dict(filters)
+    summary_options = {
+        key: filters.pop(key, None)
+        for key in ("customer_group", "supplier_group", "territory", "group_by")
+    }
+    if report_name != "Party Summary" and any(summary_options.values()):
+        raise ValueError("Party grouping filters are only valid for Party Summary")
     mapping = {
         key: filters.pop(key, None) for key in ("current_assets_group", "current_liabilities_group")
     }
@@ -416,6 +455,12 @@ def run_book(adapter, report_name, filters, *, full=False, export=False):
     if kind in VOUCHER_VIEWS:
         query_filters["show_opening_entries"] = True
     ledger = adapter.run(report_name, query_filters, full=True, export=export)
+    if kind == "party_summary":
+        from reckon_accounts.accounting.party_summary import summarize
+
+        return summarize(
+            ledger, adapter.permissions, summary_options, page=1 if full else parsed.page
+        )
     assets = liabilities = None
     if kind == "funds_flow" and not all(mapping.values()):
         return BookResult(
@@ -521,6 +566,10 @@ def book_columns(precision):
                 "precision": precision,
             }
             for name, label in (
+                ("opening_debit", "Opening Debit"),
+                ("opening_credit", "Opening Credit"),
+                ("receivable", "Receivable (GL balance)"),
+                ("payable", "Payable (GL balance)"),
                 ("sources", "Sources"),
                 ("applications", "Applications"),
                 ("working_capital_change", "Working Capital Change"),

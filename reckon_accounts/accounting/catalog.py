@@ -1,6 +1,8 @@
 """Custom Tally-style views; standard financial statements stay in ERPNext."""
 
 BOOK_REPORTS = {
+    "Party Summary": "party_summary",
+    "Account Head Wise Party Ledger": "account_party",
     "Day Book": "vouchers",
     "Cash Book": "cash",
     "Bank Book": "bank",

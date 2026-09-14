@@ -13,6 +13,48 @@ def book(name, postings, **filters):
 
 
 class TestBooks(unittest.TestCase):
+    def test_account_head_party_summary_preserves_each_party_and_account(self):
+        result = make_book(
+            book(
+                "Account Head Wise Party Ledger",
+                [
+                    posting("opening", 50, opening=True),
+                    posting("invoice", 20),
+                    posting("receipt", credit=15),
+                    posting("second", 10, party="Bob"),
+                    posting("advance", credit=30, account="Advances"),
+                ],
+            )
+        )
+        rows = {(r["account"], r["party"]): r for r in result.rows(full=True)}
+        self.assertEqual(len(rows), 3)
+        alice = rows[("Receivable", "Alice")]
+        self.assertEqual(
+            (alice["opening"], alice["debit"], alice["credit"], alice["balance"]), (50, 20, 15, 55)
+        )
+        self.assertEqual(rows[("Advances", "Alice")]["balance_credit"], 30)
+        self.assertEqual(rows[("Receivable", "Bob")]["balance"], 10)
+
+    def test_future_opening_movement_cannot_silently_diverge_from_period_totals(self):
+        for name in (
+            "Ledger Monthly Summary",
+            "Group Monthly Summary",
+            "Negative Cash",
+            "Ledger Exceptions",
+        ):
+            with self.subTest(name=name):
+                source = book(
+                    name, [posting("future", 100, opening=True, month=2)], show_opening_entries=True
+                )
+                with self.assertRaisesRegex(ValueError, "Opening vouchers after To Date"):
+                    make_book(source)
+                opening_view = make_book(
+                    book(name, [posting("future", 100, opening=True, month=2)])
+                )
+                if "Monthly" in name:
+                    self.assertEqual(opening_view.rows()[0]["opening"], 100)
+                    self.assertEqual(opening_view.rows()[0]["balance"], 100)
+
     def test_exceptions_respect_normal_credit_accounts(self):
         result = make_book(
             book(
@@ -166,6 +208,7 @@ class TestBookAdapters(unittest.TestCase):
             ),
             dict(
                 name="Subgroup",
+                account_name="Current Assets",
                 company="Co",
                 is_group=1,
                 account_currency="BDT",
@@ -195,6 +238,8 @@ class TestBookAdapters(unittest.TestCase):
         result = self.run_book("Group Summary", account="Root")
         self.assertEqual(len(result.units), 1)
         self.assertEqual(result.rows()[0]["account"], "Subgroup")
+        self.assertEqual(result.rows()[0]["account_name"], "Current Assets")
+        self.assertEqual(result.rows()[0]["description"], "Current Assets")
         self.assertEqual(result.rows()[0]["debit"], 100)
         self.assertEqual(result.rows()[0]["credit"], 100)
         self.assertTrue(result.rows()[0]["is_group"])
@@ -240,6 +285,19 @@ class TestBookAdapters(unittest.TestCase):
                 name,
                 dict(company="Co", from_date="2026-01-01", to_date="2026-01-31", **filters),
             )
+
+    def test_party_summary_grouping_preserves_debit_and_credit_sides(self):
+        result = self.run_book("Party Summary", group_by="Party Type")
+        self.assertEqual(sum(r["balance_debit"] for r in result.rows()), 100)
+        self.assertEqual(sum(r["balance_credit"] for r in result.rows()), 100)
+        self.assertEqual(sum(r["balance"] for r in result.rows()), 0)
+
+    def test_party_summary_rejects_unreadable_selected_classification(self):
+        self.gateway.denied_docs.add(("Customer Group", "Hidden"))
+        with self.assertRaises(ValueError):
+            self.run_book("Party Summary", customer_group="Hidden")
+        with self.assertRaisesRegex(ValueError, "Unsupported Party Summary grouping"):
+            self.run_book("Party Summary", group_by="unknown")
 
     def test_daybook_account_filter_selects_complete_permitted_voucher(self):
         result = self.run_book("Day Book", account="AR", page_size=1)

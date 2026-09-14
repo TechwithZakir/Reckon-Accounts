@@ -26,6 +26,8 @@ def columns(precision):
         ("balance_type", "Dr / Cr", "Data", 65),
         ("balance_debit", "Balance Dr", "Currency", 120),
         ("balance_credit", "Balance Cr", "Currency", 120),
+        ("mode_of_payment", "Mode of Payment", "Data", 140),
+        ("reference_no", "Cheque / Reference", "Data", 160),
         ("remarks", "Narration", "Data", 250),
         ("row_kind", "Row Type", "Data", 100),
         ("currency", "Currency", "Data", 80),

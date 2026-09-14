@@ -71,7 +71,7 @@ test("changing company clears dependent scope and returns to first page", async 
 test("report includes resolve to valid JS and register each report", () => {
     const base = path.join(__dirname, "../reckon_accounts/report");
     const reports = fs.readdirSync(base).filter((name) => fs.existsSync(path.join(base, name, name + ".json")));
-    assert.equal(reports.length, 23);
+    assert.equal(reports.length, 25);
     for (const dir of reports) {
         let source = fs.readFileSync(path.join(base, dir, dir + ".js"), "utf8");
         source = source.replace(/\{% include "reckon_accounts\/([^\"]+)" %\}/g,
@@ -110,4 +110,38 @@ test("leaving Reckon restores normal export behavior for standard reports", asyn
     report.export_report();
     assert.equal(standardExports, 1);
     assert.equal(fullExports, 1);
+});
+
+ test("company-wide monthly labels drill into the exact month", () => {
+    const {settings: report, sandbox} = settings("Group Monthly Summary");
+    sandbox.frappe.query_report = {get_filter_values: () => ({company: "Co", page: 4, finance_book: "Primary"})};
+    const link = report.formatter("February 2026", 0, {fieldname: "description"},
+        {row_kind: "monthly", posting_date: "2026-02-01", period_end: "2026-02-28"});
+    assert(link.includes("Group%20Vouchers"));
+    assert(link.includes("from_date=2026-02-01"));
+    assert(link.includes("to_date=2026-02-28"));
+    assert(link.includes("page=1"));
+    assert(!link.includes("account="));
+});
+
+test("register entry shortcuts use native drafts and respect create permission", async () => {
+    for (const [name, type] of [["Receipt Register", "Receive"], ["Payment Register", "Pay"], ["Contra Register", "Internal Transfer"], ["Journal Register", "Journal Entry"]]) {
+        for (const allowed of [true, false]) {
+            const {settings: config, sandbox} = settings(name);
+            const buttons = {};
+            let created;
+            sandbox.frappe.model = {can_create: () => allowed};
+            sandbox.frappe.new_doc = (doctype, values) => {created = {doctype, values};};
+            // Stop after the entry controls; metadata loading is tested separately.
+            sandbox.frappe.xcall = async () => {throw new Error("metadata boundary");};
+            await assert.rejects(config.onload({page: {add_inner_button: (label, action) => buttons[label] = action}, get_filter_value: () => "Co"}), /metadata boundary/);
+            assert.equal(Boolean(buttons["New Entry"]), allowed);
+            if (allowed) {
+                buttons["New Entry"]();
+                assert.equal(created.values.company, "Co");
+                assert.equal(created.values.payment_type || created.values.voucher_type, type);
+                assert.equal(created.doctype, name === "Journal Register" ? "Journal Entry" : "Payment Entry");
+            }
+        }
+    }
 });

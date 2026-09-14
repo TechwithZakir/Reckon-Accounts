@@ -25,8 +25,14 @@ def normalize_report_filters(values):
         "voucher_type",
         "voucher_no",
         "payment_type",
+        "mode_of_payment",
+        "reference_no",
         "fiscal_year",
         "finance_book",
+        "customer_group",
+        "supplier_group",
+        "territory",
+        "group_by",
         "current_assets_group",
         "current_liabilities_group",
     }
@@ -140,6 +146,7 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
         "fiscal_year": "Fiscal Year",
         "finance_book": "Finance Book",
         "voucher_type": "DocType",
+        "mode_of_payment": "Mode of Payment",
     } | _metadata(gateway)
     party_type = filters.get("party_type")
     if fieldname == "party":
@@ -150,6 +157,10 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
         if not source_type or not gateway.can_read_type(source_type):
             frappe.throw("Select a permitted source type")
         allowed["voucher_no"] = source_type
+    if filters.get("report_name") == "Party Summary":
+        allowed.update(
+            customer_group="Customer Group", supplier_group="Supplier Group", territory="Territory"
+        )
     if filters.get("report_name") == "Funds Flow":
         allowed.update(current_assets_group="Account", current_liabilities_group="Account")
     if allowed.get(fieldname) != doctype:
