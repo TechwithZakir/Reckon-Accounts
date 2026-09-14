@@ -417,6 +417,17 @@ def run_book(adapter, report_name, filters, *, full=False, export=False):
         query_filters["show_opening_entries"] = True
     ledger = adapter.run(report_name, query_filters, full=True, export=export)
     assets = liabilities = None
+    if kind == "funds_flow" and not all(mapping.values()):
+        return BookResult(
+            ledger=ledger,
+            units=(),
+            notice=(
+                "Funds Flow is not calculated: select Current Assets Group and "
+                "Current Liabilities Group to define working capital. "
+                "No group classification is assumed."
+            ),
+            page=1,
+        )
     if kind == "funds_flow":
         from reckon_accounts.accounting.dimensions import expand_selection
 
@@ -472,7 +483,7 @@ def run_book(adapter, report_name, filters, *, full=False, export=False):
         current_assets=assets,
         current_liabilities=liabilities,
     )
-    if kind == "group_summary":
+    if kind == "group_summary" and parsed.account:
         # Validate page against the rolled-up units, not the ungrouped accounts.
         result = replace(result, units=group_summary_units(ledger, adapter.permissions))
         if result.page > result.total_pages:

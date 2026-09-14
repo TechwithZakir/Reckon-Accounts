@@ -1,0 +1,73 @@
+{
+ "doctype": "Workspace",
+ "name": "Reckon Accounts Cash and Bank",
+ "label": "Reckon Accounts Cash and Bank",
+ "title": "Reckon Accounts Cash and Bank",
+ "module": "Reckon Accounts",
+ "public": 1,
+ "is_hidden": 0,
+ "icon": "accounting",
+ "sequence_id": 2,
+ "parent_page": "Reckon Accounts",
+ "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Cash and Bank\", \"col\": 4}}]",
+ "links": [
+  {
+   "type": "Card Break",
+   "label": "Cash and Bank"
+  },
+  {
+   "type": "Link",
+   "label": "Cash Book",
+   "link_type": "Report",
+   "link_to": "Cash Book",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Bank Book",
+   "link_type": "Report",
+   "link_to": "Bank Book",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Cash Bank Summary",
+   "link_type": "Report",
+   "link_to": "Cash Bank Summary",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Bank Summary",
+   "link_type": "Report",
+   "link_to": "Bank Summary",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Receipts and Payments",
+   "link_type": "Report",
+   "link_to": "Receipts and Payments",
+   "is_query_report": 1
+  }
+ ],
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "charts": [],
+ "custom_blocks": [],
+ "number_cards": [],
+ "shortcuts": [],
+ "quick_lists": []
+}

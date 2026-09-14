@@ -1,0 +1,87 @@
+{
+ "doctype": "Workspace",
+ "name": "Reckon Accounts Transactions",
+ "label": "Reckon Accounts Transactions",
+ "title": "Reckon Accounts Transactions",
+ "module": "Reckon Accounts",
+ "public": 1,
+ "is_hidden": 0,
+ "icon": "accounting",
+ "sequence_id": 7,
+ "parent_page": "Reckon Accounts",
+ "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Transactions\", \"col\": 4}}]",
+ "links": [
+  {
+   "type": "Card Break",
+   "label": "Transactions"
+  },
+  {
+   "type": "Link",
+   "label": "Journal Entry",
+   "link_type": "DocType",
+   "link_to": "Journal Entry",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Payment Entry",
+   "link_type": "DocType",
+   "link_to": "Payment Entry",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Sales Invoice",
+   "link_type": "DocType",
+   "link_to": "Sales Invoice",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Purchase Invoice",
+   "link_type": "DocType",
+   "link_to": "Purchase Invoice",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Dunning",
+   "link_type": "DocType",
+   "link_to": "Dunning",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bank Transaction",
+   "link_type": "DocType",
+   "link_to": "Bank Transaction",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Payment Reconciliation",
+   "link_type": "DocType",
+   "link_to": "Payment Reconciliation",
+   "is_query_report": 0
+  }
+ ],
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "charts": [],
+ "custom_blocks": [],
+ "number_cards": [],
+ "shortcuts": [],
+ "quick_lists": []
+}

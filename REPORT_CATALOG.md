@@ -45,8 +45,9 @@ in the inspected ERPNext 15/16 inventories. Historical Cash Flow is not a foreca
 
 ## Accounting and release limits
 
-Funds Flow requires explicitly selected current-asset and current-liability
-groups and reports changes in working capital. Voucher views show permitted
+Only Company and the date range are required to open any custom report.
+Funds Flow displays a calculation notice until current-asset and current-liability
+groups are selected; with mappings it reports changes in working capital. Voucher views show permitted
 source lines and disclose that voucher completeness is not asserted. Receipts
 and Payments discloses internal-transfer treatment. Exceptions use account root
 types rather than treating all credit balances as errors.

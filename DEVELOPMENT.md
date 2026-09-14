@@ -62,3 +62,27 @@ disposable sites before release. Full milestone completion requires these result
 The current host has no discovered Bench runtime or database. That does not block
 source development. Integration results must remain marked not run until a development
 bench or CI environment is available. No support claim follows merely from dependency ranges.
+
+## Home and navigation update
+
+The home workspace uses nine cards in three columns at desktop width. It includes
+all 23 app reports, nine reused standard reports, and 22 accounting DocTypes.
+Frappe 15 exposes grouped child workspaces beneath Reckon Accounts; Frappe 16
+imports the app-level Workspace Sidebar with expandable report/DocType sections.
+Framework permission filtering remains active. No ERPNext DocType is moved to
+this app, and no additional accounting masters are created.
+
+After transferring the updated source to the installed app folder, run from Bench:
+
+```sh
+bench --site your-site migrate
+bench build --app reckon_accounts
+bench --site your-site clear-cache
+```
+
+Reload Desk after migration. A personalized workspace/sidebar can take precedence
+over the public app layout; use the standard public workspace when checking this
+update. Visual verification on both live framework versions remains pending.
+
+Source references: [v15 workspace schema](https://github.com/frappe/frappe/blob/version-15/frappe/desk/doctype/workspace/workspace.json),
+[v16 sidebar sync](https://github.com/frappe/frappe/blob/version-16/frappe/model/sync.py).

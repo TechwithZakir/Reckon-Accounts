@@ -110,19 +110,6 @@ class LedgerResult:
 def validate_report_scope(report_name: str, filters: LedgerFilters):
     if report_name not in REPORTS:
         raise ValueError("Unknown Reckon report")
-    if REPORTS[report_name] == "account" and not filters.account:
-        raise ValueError("Account Ledger requires an account or account group")
-    if (
-        REPORTS[report_name] in {"monthly", "group_summary", "group_monthly", "group_vouchers"}
-        and not filters.account
-    ):
-        raise ValueError("Select a ledger account or group")
-    if REPORTS[report_name] == "party":
-        if filters.party_type == "Other":
-            if not filters.account:
-                raise ValueError("Other requires an account")
-        elif not (filters.party_type and filters.party):
-            raise ValueError("Party Ledger requires a party type and party")
 
 
 def build_ledger(

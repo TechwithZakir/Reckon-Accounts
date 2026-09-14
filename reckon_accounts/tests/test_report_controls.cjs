@@ -27,7 +27,7 @@ test("each report has strict scope controls and correct required account", () =>
         const fields = report.filters.map((field) => field.fieldname);
         assert.equal(fields.length, new Set(fields).size);
         assert(fields.includes("finance_book") && fields.includes("dimensions"));
-        assert.equal(Boolean(report.filters.find((f) => f.fieldname === "account").reqd), name === "Account Ledger");
+        assert.equal(Boolean(report.filters.find((f) => f.fieldname === "account").reqd), false);
     }
 });
 
@@ -81,6 +81,7 @@ test("report includes resolve to valid JS and register each report", () => {
         assert(source.includes(metadata.report_name));
         assert.equal(metadata.add_total_row, 0);
         assert.equal(metadata.ref_doctype, "GL Entry");
+        assert.deepEqual(Array.from(settings(metadata.report_name).settings.filters.filter(f => f.reqd), f => f.fieldname), ["company", "from_date", "to_date"]);
         assert.equal(metadata.module, "Reckon Accounts");
         assert(!metadata.report_name.startsWith("Reckon "));
         assert.notEqual(metadata.report_name, "General Ledger");

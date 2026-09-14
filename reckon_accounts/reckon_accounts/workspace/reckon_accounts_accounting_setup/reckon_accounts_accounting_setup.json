@@ -1,0 +1,87 @@
+{
+ "doctype": "Workspace",
+ "name": "Reckon Accounts Accounting Setup",
+ "label": "Reckon Accounts Accounting Setup",
+ "title": "Reckon Accounts Accounting Setup",
+ "module": "Reckon Accounts",
+ "public": 1,
+ "is_hidden": 0,
+ "icon": "accounting",
+ "sequence_id": 9,
+ "parent_page": "Reckon Accounts",
+ "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Accounting Setup\", \"col\": 4}}]",
+ "links": [
+  {
+   "type": "Card Break",
+   "label": "Accounting Setup"
+  },
+  {
+   "type": "Link",
+   "label": "Accounts Settings",
+   "link_type": "DocType",
+   "link_to": "Accounts Settings",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Fiscal Year",
+   "link_type": "DocType",
+   "link_to": "Fiscal Year",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Finance Book",
+   "link_type": "DocType",
+   "link_to": "Finance Book",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Accounting Dimension",
+   "link_type": "DocType",
+   "link_to": "Accounting Dimension",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Mode of Payment",
+   "link_type": "DocType",
+   "link_to": "Mode of Payment",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Payment Terms Template",
+   "link_type": "DocType",
+   "link_to": "Payment Terms Template",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Budget",
+   "link_type": "DocType",
+   "link_to": "Budget",
+   "is_query_report": 0
+  }
+ ],
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "charts": [],
+ "custom_blocks": [],
+ "number_cards": [],
+ "shortcuts": [],
+ "quick_lists": []
+}

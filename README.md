@@ -40,10 +40,13 @@ this development build does not grant a new license.
 
 ## Report use
 
-Open **Reckon Accounts** in Desk and choose a ledger. Party Ledger requires a
-party type and party; **Other** requires an account and includes every permitted
-posted party unless **Only Entries Without Party** is checked. Account Ledger
-requires an account or group. General Ledger Custom supports the same scope filters.
+Open **Reckon Accounts** in Desk and choose a report. Only Company, From Date
+and To Date are mandatory. Leave account, party and group filters blank for all
+permitted records in scope. Group Summary without a group shows account-level
+summaries; selecting a group enables its hierarchy rollup. Funds Flow opens
+without group selections and explains that figures cannot be calculated until
+both working-capital groups are supplied. Optional filters still validate their
+linked identities, company ownership and currency compatibility.
 
 Use **Dimensions** for multiple selections and explicit blank values. Selecting
 a voucher or payment type restricts balances as well as rows. **Export Full Ledger**

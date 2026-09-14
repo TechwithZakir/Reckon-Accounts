@@ -277,17 +277,13 @@ class TestBookAdapters(unittest.TestCase):
         self.assertTrue(all(r["voucher_no"] == "PE-1" for r in entries))
 
     def test_all_catalog_views_have_executable_renderers(self):
-        for name, kind in BOOK_REPORTS.items():
-            if kind == "funds_flow":
-                continue  # separately tested with explicit chart mappings
-            filters = (
-                {"account": "AR"}
-                if kind in {"monthly", "group_monthly", "group_summary", "group_vouchers"}
-                else {}
-            )
+        for name in BOOK_REPORTS:
             with self.subTest(name=name):
-                result = self.run_book(name, **filters)
+                result = self.run_book(name)
                 self.assertIsInstance(book_csv(result), str)
+                if name == "Funds Flow":
+                    self.assertEqual(result.rows(), [])
+                    self.assertIn("not calculated", result.notice)
 
     def test_statistics_ignore_cancelled_and_future_opening(self):
         self.gateway.records["GL Entry"] += [

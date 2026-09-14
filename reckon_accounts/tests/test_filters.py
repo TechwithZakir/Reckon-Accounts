@@ -123,6 +123,7 @@ class TestFilters(unittest.TestCase):
                 self.parse(dimensions=dimension)
 
     def test_other_is_an_account_view(self):
+        self.assertEqual(self.parse(party_type="Other").party_type, "Other")
         self.assertEqual(self.parse(party_type="Other", account="Bank").party_type, "Other")
         self.assertTrue(
             self.parse(
@@ -130,7 +131,6 @@ class TestFilters(unittest.TestCase):
             ).only_entries_without_party
         )
         for values in (
-            {"party_type": "Other"},
             {"party_type": "Other", "account": "Bank", "party": "A"},
             {"payment_type": "Pay", "voucher_type": "Journal Entry"},
             {"include_default_book_entries": "false"},

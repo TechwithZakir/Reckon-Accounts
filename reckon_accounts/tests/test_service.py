@@ -159,8 +159,16 @@ class TestService(unittest.TestCase):
             ]
         self.assertEqual([r for r in full if r["row_kind"] == "entry"], page_entries)
 
+    def test_ledgers_accept_company_and_dates_only(self):
+        for name in ("Party Ledger", "Account Ledger", "General Ledger Custom"):
+            with self.subTest(name=name):
+                result = ledger(
+                    [posting("a", 100), posting("b", 20, account="Bank", party="")], report=name
+                )
+                self.assertEqual({s.account for s in result.sections}, {"Receivable", "Bank"})
+
     def test_invalid_scope_and_duplicate_entries(self):
-        for report in ("Unknown", "Party Ledger", "Account Ledger"):
+        for report in ("Unknown",):
             with self.subTest(report=report), self.assertRaises(ValueError):
                 ledger([], report=report)
         with self.assertRaises(ValueError):

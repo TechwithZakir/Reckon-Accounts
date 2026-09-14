@@ -1,0 +1,94 @@
+{
+ "doctype": "Workspace",
+ "name": "Reckon Accounts Masters",
+ "label": "Reckon Accounts Masters",
+ "title": "Reckon Accounts Masters",
+ "module": "Reckon Accounts",
+ "public": 1,
+ "is_hidden": 0,
+ "icon": "accounting",
+ "sequence_id": 8,
+ "parent_page": "Reckon Accounts",
+ "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Masters\", \"col\": 4}}]",
+ "links": [
+  {
+   "type": "Card Break",
+   "label": "Masters"
+  },
+  {
+   "type": "Link",
+   "label": "Company",
+   "link_type": "DocType",
+   "link_to": "Company",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Account",
+   "link_type": "DocType",
+   "link_to": "Account",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Customer",
+   "link_type": "DocType",
+   "link_to": "Customer",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Supplier",
+   "link_type": "DocType",
+   "link_to": "Supplier",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bank",
+   "link_type": "DocType",
+   "link_to": "Bank",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Bank Account",
+   "link_type": "DocType",
+   "link_to": "Bank Account",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Cost Center",
+   "link_type": "DocType",
+   "link_to": "Cost Center",
+   "is_query_report": 0
+  },
+  {
+   "type": "Link",
+   "label": "Project",
+   "link_type": "DocType",
+   "link_to": "Project",
+   "is_query_report": 0
+  }
+ ],
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "charts": [],
+ "custom_blocks": [],
+ "number_cards": [],
+ "shortcuts": [],
+ "quick_lists": []
+}

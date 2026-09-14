@@ -1,8 +1,6 @@
 frappe.provide("reckon_accounts");
 
 reckon_accounts.report_settings = function (report_name) {
-    const accountRequired = ["Account Ledger", "Ledger Monthly Summary",
-        "Group Summary", "Group Monthly Summary", "Group Vouchers"].includes(report_name);
     const api = "reckon_accounts.api.";
     const search = (scope_field, report = frappe.query_report) => ({
         query: api + "search_records",
@@ -24,9 +22,8 @@ reckon_accounts.report_settings = function (report_name) {
         {fieldname: "to_date", label: __("To Date"), fieldtype: "Date", reqd: 1,
             default: frappe.datetime.get_today()},
         link("fiscal_year", "Fiscal Year", "Fiscal Year"),
-        link("account", "Ledger Account / Group", "Account", {reqd: accountRequired}),
-        {fieldname: "party_type", label: __("Party Type"), fieldtype: "Select", options: [""],
-            reqd: report_name === "Party Ledger"},
+        link("account", "Ledger Account / Group", "Account"),
+        {fieldname: "party_type", label: __("Party Type"), fieldtype: "Select", options: [""]},
         {fieldname: "party", label: __("Party"), fieldtype: "Dynamic Link", options: "party_type",
             get_query: () => search("party"), depends_on: "eval:doc.party_type && doc.party_type !== 'Other'"},
         {fieldname: "only_entries_without_party", label: __("Only Entries Without Party"),
@@ -49,8 +46,8 @@ reckon_accounts.report_settings = function (report_name) {
         {fieldname: "dimensions", label: __("Dimensions"), fieldtype: "Data", hidden: 1, default: "{}"},
     ];
     if (report_name === "Funds Flow") {
-        filters.push(link("current_assets_group", "Current Assets Group", "Account", {reqd: 1}));
-        filters.push(link("current_liabilities_group", "Current Liabilities Group", "Account", {reqd: 1}));
+        filters.push(link("current_assets_group", "Current Assets Group", "Account"));
+        filters.push(link("current_liabilities_group", "Current Liabilities Group", "Account"));
     }
     // Changing a balance filter returns to page 1; paging itself keeps the scope.
     for (const filter of filters) {

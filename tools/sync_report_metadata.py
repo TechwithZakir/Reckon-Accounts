@@ -44,70 +44,20 @@ def main():
         (folder / (slug + ".json")).write_text(
             json.dumps(metadata, indent=1) + "\n", encoding="utf-8"
         )
-    workspace_path = PACKAGE / "reckon_accounts/workspace/reckon_accounts/reckon_accounts.json"
-    workspace = json.loads(workspace_path.read_text(encoding="utf-8-sig"))
-    # Keep existing ledger links while adding separately labelled custom/standard groups.
-    existing = {
-        item.get("link_to")
-        for item in workspace["links"]
-        if item.get("link_to") not in BOOK_REPORTS
-    }
-    ledger_names = [
-        name
-        for name in ("Party Ledger", "Account Ledger", "General Ledger Custom")
-        if name in existing
-    ]
-    groups = {
-        "Ledgers": ledger_names,
-        "Tally Books and Summaries": list(BOOK_REPORTS),
-        "ERPNext Standard Reports": [
-            "General Ledger",
-            "Trial Balance",
-            "Balance Sheet",
-            "Profit and Loss Statement",
-            "Cash Flow",
-            "Financial Ratios",
-            "Accounts Receivable",
-            "Accounts Payable",
-            "Bank Reconciliation Statement",
-        ],
-    }
-    workspace["links"] = []
-    content = [{"id": "heading", "type": "header", "data": {"text": "Reckon Accounts", "col": 12}}]
-    for index, (label, names) in enumerate(groups.items()):
-        workspace["links"].append({"type": "Card Break", "label": label})
-        workspace["links"].extend(
-            {
-                "type": "Link",
-                "label": name,
-                "link_type": "Report",
-                "link_to": name,
-                "is_query_report": 1,
-            }
-            for name in names
+    from reckon_accounts.navigation import sidebar_document, workspace_documents
+
+    for workspace in workspace_documents():
+        slug = workspace["name"].lower().replace(" ", "_")
+        folder = PACKAGE / "reckon_accounts" / "workspace" / slug
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / (slug + ".json")).write_text(
+            json.dumps(workspace, indent=1) + "\n", encoding="utf-8"
         )
-        content.append(
-            {"id": "card-" + str(index), "type": "card", "data": {"card_name": label, "col": 12}}
-        )
-    workspace["content"] = json.dumps(content)
-    workspace["links"].append({"type": "Card Break", "label": "ERPNext Interest and Collections"})
-    workspace["links"].append(
-        {
-            "type": "Link",
-            "label": "Sales Interest / Dunning",
-            "link_type": "DocType",
-            "link_to": "Dunning",
-        }
+    folder = PACKAGE / "workspace_sidebar"
+    folder.mkdir(exist_ok=True)
+    (folder / "reckon_accounts.json").write_text(
+        json.dumps(sidebar_document(), indent=1) + "\n", encoding="utf-8"
     )
-    content.append(
-        {
-            "id": "interest",
-            "type": "card",
-            "data": {"card_name": "ERPNext Interest and Collections", "col": 12},
-        }
-    )
-    workspace["content"] = json.dumps(content)
-    workspace_path.write_text(json.dumps(workspace, indent=1) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

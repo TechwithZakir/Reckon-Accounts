@@ -127,8 +127,8 @@ def parse_ledger_filters(values: Mapping) -> LedgerFilters:
     if no_party and (links["party"] or links["party_type"] not in (None, "Other")):
         raise ValueError("Party filters conflict with only_entries_without_party")
     if links["party_type"] == "Other":
-        if links["party"] or not links["account"]:
-            raise ValueError("Other requires an account and must not specify a party")
+        if links["party"]:
+            raise ValueError("Other must not specify a party")
     if links["payment_type"] not in (None, "Receive", "Pay", "Internal Transfer"):
         raise ValueError("Unsupported payment_type")
     if links["payment_type"] and links["voucher_type"] not in (None, "Payment Entry"):

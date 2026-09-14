@@ -1,448 +1,469 @@
 {
- "doctype": "Workspace",
+ "doctype": "Workspace Sidebar",
  "name": "Reckon Accounts",
- "label": "Reckon Accounts",
  "title": "Reckon Accounts",
+ "app": "reckon_accounts",
  "module": "Reckon Accounts",
- "public": 1,
- "is_hidden": 0,
- "icon": "accounting",
- "sequence_id": 20,
- "parent_page": "",
- "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Ledgers\", \"col\": 4}}, {\"id\": \"card-1\", \"type\": \"card\", \"data\": {\"card_name\": \"Cash and Bank\", \"col\": 4}}, {\"id\": \"card-2\", \"type\": \"card\", \"data\": {\"card_name\": \"Groups and Analysis\", \"col\": 4}}, {\"id\": \"card-3\", \"type\": \"card\", \"data\": {\"card_name\": \"Voucher Registers\", \"col\": 4}}, {\"id\": \"card-4\", \"type\": \"card\", \"data\": {\"card_name\": \"Financial Statements\", \"col\": 4}}, {\"id\": \"card-5\", \"type\": \"card\", \"data\": {\"card_name\": \"Outstanding and Reconciliation\", \"col\": 4}}, {\"id\": \"card-6\", \"type\": \"card\", \"data\": {\"card_name\": \"Transactions\", \"col\": 4}}, {\"id\": \"card-7\", \"type\": \"card\", \"data\": {\"card_name\": \"Masters\", \"col\": 4}}, {\"id\": \"card-8\", \"type\": \"card\", \"data\": {\"card_name\": \"Accounting Setup\", \"col\": 4}}]",
- "links": [
+ "standard": 1,
+ "header_icon": "accounting",
+ "items": [
   {
-   "type": "Card Break",
-   "label": "Ledgers"
+   "type": "Link",
+   "label": "Home",
+   "link_type": "Workspace",
+   "link_to": "Reckon Accounts",
+   "child": 0,
+   "icon": "house"
+  },
+  {
+   "type": "Section Break",
+   "label": "Ledgers",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Party Ledger",
    "link_type": "Report",
    "link_to": "Party Ledger",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Account Ledger",
    "link_type": "Report",
    "link_to": "Account Ledger",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "General Ledger Custom",
    "link_type": "Report",
    "link_to": "General Ledger Custom",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Ledger Monthly Summary",
    "link_type": "Report",
    "link_to": "Ledger Monthly Summary",
-   "is_query_report": 1
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Cash and Bank"
+   "type": "Section Break",
+   "label": "Cash and Bank",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Cash Book",
    "link_type": "Report",
    "link_to": "Cash Book",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Bank Book",
    "link_type": "Report",
    "link_to": "Bank Book",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Cash Bank Summary",
    "link_type": "Report",
    "link_to": "Cash Bank Summary",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Bank Summary",
    "link_type": "Report",
    "link_to": "Bank Summary",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Receipts and Payments",
    "link_type": "Report",
    "link_to": "Receipts and Payments",
-   "is_query_report": 1
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Groups and Analysis"
+   "type": "Section Break",
+   "label": "Groups and Analysis",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Group Summary",
    "link_type": "Report",
    "link_to": "Group Summary",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Group Monthly Summary",
    "link_type": "Report",
    "link_to": "Group Monthly Summary",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Group Vouchers",
    "link_type": "Report",
    "link_to": "Group Vouchers",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Funds Flow",
    "link_type": "Report",
    "link_to": "Funds Flow",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Negative Cash",
    "link_type": "Report",
    "link_to": "Negative Cash",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Ledger Exceptions",
    "link_type": "Report",
    "link_to": "Ledger Exceptions",
-   "is_query_report": 1
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Voucher Registers"
+   "type": "Section Break",
+   "label": "Voucher Registers",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Day Book",
    "link_type": "Report",
    "link_to": "Day Book",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Receipt Register",
    "link_type": "Report",
    "link_to": "Receipt Register",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Payment Register",
    "link_type": "Report",
    "link_to": "Payment Register",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Contra Register",
    "link_type": "Report",
    "link_to": "Contra Register",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Journal Register",
    "link_type": "Report",
    "link_to": "Journal Register",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Debit Note Register",
    "link_type": "Report",
    "link_to": "Debit Note Register",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Credit Note Register",
    "link_type": "Report",
    "link_to": "Credit Note Register",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Voucher Statistics",
    "link_type": "Report",
    "link_to": "Voucher Statistics",
-   "is_query_report": 1
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Financial Statements"
+   "type": "Section Break",
+   "label": "Financial Statements",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "General Ledger",
    "link_type": "Report",
    "link_to": "General Ledger",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Trial Balance",
    "link_type": "Report",
    "link_to": "Trial Balance",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Balance Sheet",
    "link_type": "Report",
    "link_to": "Balance Sheet",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Profit and Loss Statement",
    "link_type": "Report",
    "link_to": "Profit and Loss Statement",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Cash Flow",
    "link_type": "Report",
    "link_to": "Cash Flow",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Financial Ratios",
    "link_type": "Report",
    "link_to": "Financial Ratios",
-   "is_query_report": 1
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Outstanding and Reconciliation"
+   "type": "Section Break",
+   "label": "Outstanding and Reconciliation",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Accounts Receivable",
    "link_type": "Report",
    "link_to": "Accounts Receivable",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Accounts Payable",
    "link_type": "Report",
    "link_to": "Accounts Payable",
-   "is_query_report": 1
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Bank Reconciliation Statement",
    "link_type": "Report",
    "link_to": "Bank Reconciliation Statement",
-   "is_query_report": 1
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Transactions"
+   "type": "Section Break",
+   "label": "Transactions",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Journal Entry",
    "link_type": "DocType",
    "link_to": "Journal Entry",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Payment Entry",
    "link_type": "DocType",
    "link_to": "Payment Entry",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Sales Invoice",
    "link_type": "DocType",
    "link_to": "Sales Invoice",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Purchase Invoice",
    "link_type": "DocType",
    "link_to": "Purchase Invoice",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Dunning",
    "link_type": "DocType",
    "link_to": "Dunning",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Bank Transaction",
    "link_type": "DocType",
    "link_to": "Bank Transaction",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Payment Reconciliation",
    "link_type": "DocType",
    "link_to": "Payment Reconciliation",
-   "is_query_report": 0
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Masters"
+   "type": "Section Break",
+   "label": "Masters",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Company",
    "link_type": "DocType",
    "link_to": "Company",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Account",
    "link_type": "DocType",
    "link_to": "Account",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Customer",
    "link_type": "DocType",
    "link_to": "Customer",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Supplier",
    "link_type": "DocType",
    "link_to": "Supplier",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Bank",
    "link_type": "DocType",
    "link_to": "Bank",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Bank Account",
    "link_type": "DocType",
    "link_to": "Bank Account",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Cost Center",
    "link_type": "DocType",
    "link_to": "Cost Center",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Project",
    "link_type": "DocType",
    "link_to": "Project",
-   "is_query_report": 0
+   "child": 1
   },
   {
-   "type": "Card Break",
-   "label": "Accounting Setup"
+   "type": "Section Break",
+   "label": "Accounting Setup",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
   },
   {
    "type": "Link",
    "label": "Accounts Settings",
    "link_type": "DocType",
    "link_to": "Accounts Settings",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Fiscal Year",
    "link_type": "DocType",
    "link_to": "Fiscal Year",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Finance Book",
    "link_type": "DocType",
    "link_to": "Finance Book",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Accounting Dimension",
    "link_type": "DocType",
    "link_to": "Accounting Dimension",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Mode of Payment",
    "link_type": "DocType",
    "link_to": "Mode of Payment",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Payment Terms Template",
    "link_type": "DocType",
    "link_to": "Payment Terms Template",
-   "is_query_report": 0
+   "child": 1
   },
   {
    "type": "Link",
    "label": "Budget",
    "link_type": "DocType",
    "link_to": "Budget",
-   "is_query_report": 0
+   "child": 1
   }
- ],
- "roles": [
-  {
-   "role": "Accounts User"
-  },
-  {
-   "role": "Accounts Manager"
-  },
-  {
-   "role": "System Manager"
-  },
-  {
-   "role": "Auditor"
-  }
- ],
- "charts": [],
- "custom_blocks": [],
- "number_cards": [],
- "shortcuts": [],
- "quick_lists": []
+ ]
 }
