@@ -1,0 +1,25 @@
+{
+ "doctype": "Report",
+ "name": "Cash Bank Summary",
+ "report_name": "Cash Bank Summary",
+ "ref_doctype": "GL Entry",
+ "module": "Reckon Accounts",
+ "is_standard": "Yes",
+ "report_type": "Script Report",
+ "disabled": 0,
+ "prepared_report": 0,
+ "add_total_row": 0,
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "filters": [],
+ "columns": []
+}
