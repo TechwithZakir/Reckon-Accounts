@@ -19,6 +19,8 @@ class TestNavigation(unittest.TestCase):
             "STANDARD_REPORTS",
         ):
             self.assertIn(collection, source)
+        self.assertIn('_ensure_role_links("Workspace", "Reckon Accounts")', source)
+        self.assertIn('_ensure_role_links("Page", "voucher-entry")', source)
         self.assertIn('_ensure_role_links("Workspace", "Accounting")', source)
 
     def test_one_workspace_and_three_column_cards(self):
@@ -85,7 +87,8 @@ class TestNavigation(unittest.TestCase):
 
         icon = hooks.add_to_apps_screen[0]
         self.assertEqual(icon["logo"], "/assets/reckon_accounts/images/reckon-accounts-icon.png")
-        self.assertEqual(icon["route"], "/app/reckon-accounts")
+        self.assertEqual(icon["route"], "/desk/reckon-accounts")
+        self.assertEqual(icon["desk_route"], "/desk/reckon-accounts")
         path = Path(__file__).parents[1] / "public/images/reckon-accounts-icon.png"
         self.assertTrue(path.is_file())
         self.assertEqual(len(hashlib.sha256(path.read_bytes()).hexdigest()), 64)
@@ -102,6 +105,7 @@ class TestNavigation(unittest.TestCase):
 
         patches = (Path(__file__).parents[1] / "patches.txt").read_text(encoding="utf-8")
         self.assertIn("reckon_accounts.patches.v0_1.restore_desktop_app_icon", patches)
+        self.assertIn("reckon_accounts.patches.v0_1.fix_desktop_workspace_route", patches)
 
 
 if __name__ == "__main__":

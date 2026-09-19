@@ -7,7 +7,7 @@ app_description = "Tally-oriented accounting reports and navigation for ERPNext"
 app_logo_url = "/assets/reckon_accounts/images/reckon-accounts-icon.png"
 app_icon_url = app_logo_url
 app_icon_title = "Reckon Accounts"
-app_icon_route = "/app/reckon-accounts"
+app_icon_route = "/desk/reckon-accounts"
 
 add_to_apps_screen = [
     {
@@ -15,6 +15,7 @@ add_to_apps_screen = [
         "logo": app_logo_url,
         "title": app_title,
         "route": app_icon_route,
+        "desk_route": app_icon_route,
         "has_permission": "reckon_accounts.api.check_app_permission",
         "sequence_id": 20,
     }

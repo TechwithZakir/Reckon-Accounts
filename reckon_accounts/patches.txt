@@ -2,3 +2,4 @@ reckon_accounts.patches.v0_1.remove_generated_child_workspaces
 reckon_accounts.patches.v0_1.sync_desktop_app_icon
 reckon_accounts.patches.v0_1.restore_desktop_app_icon
 reckon_accounts.patches.v0_1.setup_reckon_roles
+reckon_accounts.patches.v0_1.fix_desktop_workspace_route

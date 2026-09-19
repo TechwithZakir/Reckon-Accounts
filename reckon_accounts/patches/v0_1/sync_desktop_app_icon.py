@@ -4,7 +4,7 @@ import frappe
 
 LABEL = "Reckon Accounts"
 APP_NAME = "reckon_accounts"
-APP_ROUTE = "/app/reckon-accounts"
+APP_ROUTE = "/desk/reckon-accounts"
 ICON_URL = "/assets/reckon_accounts/images/reckon-accounts-icon.png"
 
 
