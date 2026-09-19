@@ -29,6 +29,24 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
             .on("click", open).appendTo(grid);
     }
 
+    const list_grid = $("<div class='mt-2'></div>").css({display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px"}).appendTo(body);
+    for (const [, label, doctype, defaults] of entries) {
+        const open_list = () => {
+            if (!frappe.model.can_read(doctype)) {
+                return frappe.msgprint(__("You do not have permission to view these vouchers."));
+            }
+            frappe.route_options = {...defaults};
+            if (company.get_value()) frappe.route_options.company = company.get_value();
+            frappe.set_route("List", doctype, "List");
+        };
+        $("<button type='button' class='btn btn-link text-left'></button>")
+            .text(__(label + " List"))
+            .prop("disabled", !frappe.model.can_read(doctype))
+            .on("click", open_list)
+            .appendTo(list_grid);
+    }
+
     $("<h4 class='mt-5 mb-3'></h4>").text(__("Today's Activity")).appendTo(body);
     const counts = $("<div></div>").css({display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px"}).appendTo(body);

@@ -73,6 +73,8 @@ class TestNavigation(unittest.TestCase):
         path = Path(__file__).parents[1] / "reckon_accounts/page/voucher_entry/voucher_entry.js"
         source = path.read_text(encoding="utf-8")
         self.assertIn("frappe.db.count", source)
+        self.assertIn('frappe.set_route("List", doctype, "List")', source)
+        self.assertIn('label + " List"', source)
         for label in (
             "Day Book",
             "Cash Book",
