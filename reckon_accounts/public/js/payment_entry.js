@@ -24,17 +24,17 @@
         const dimensions = frm.fields_dict.accounting_dimensions_section?.wrapper;
         const amounts = frm.fields_dict.payment_amounts_section?.wrapper;
         const accounts = frm.fields_dict.payment_accounts_section?.wrapper;
-        const customRemarks = frm.fields_dict.custom_remarks?.wrapper;
+        const remarks = frm.fields_dict.remarks?.wrapper;
         if (amounts && accounts && !$(amounts).data("reckon-moved")) {
             $(accounts).before(amounts);
             $(amounts).data("reckon-moved", true);
         }
-        if (customRemarks && amounts && !$(customRemarks).data("reckon-moved")) {
-            $(amounts).after(customRemarks);
-            $(customRemarks).data("reckon-moved", true);
+        if (remarks && amounts && !$(remarks).data("reckon-moved")) {
+            $(amounts).after(remarks);
+            $(remarks).data("reckon-moved", true);
         }
-        if (dimensions && (customRemarks || amounts) && !$(dimensions).data("reckon-moved")) {
-            $(customRemarks || amounts).after(dimensions);
+        if (dimensions && (remarks || amounts) && !$(dimensions).data("reckon-moved")) {
+            $(remarks || amounts).after(dimensions);
             $(dimensions).data("reckon-moved", true);
         }
     }
@@ -55,9 +55,14 @@
             frm.set_df_property(fieldname, "label", label);
         }
         frm.set_df_property("mode_of_payment", "reqd", 1);
-        frm.set_df_property("custom_remarks", "hidden", 0);
-        frm.set_df_property("custom_remarks", "depends_on", "");
-        frm.toggle_display("custom_remarks", true);
+        frm.set_df_property("custom_remarks", "hidden", 1);
+        frm.toggle_display("custom_remarks", false);
+        frm.set_df_property("remarks", "label", __("Custom Remarks"));
+        frm.set_df_property("remarks", "hidden", 0);
+        frm.set_df_property("remarks", "depends_on", "");
+        frm.set_df_property("remarks", "read_only", 0);
+        frm.set_df_property("remarks", "read_only_depends_on", "");
+        frm.toggle_display("remarks", true);
         arrange_sections(frm);
     }
 
@@ -68,5 +73,10 @@
             expand_accounting_dimensions(frm);
         },
         payment_type: apply_payment_labels,
+        remarks(frm) {
+            if (!frm.doc.custom_remarks) {
+                frm.set_value("custom_remarks", 1);
+            }
+        },
     });
 })();

@@ -26,7 +26,7 @@ test("payment labels and required mode follow payment type", () => {
     const amounts = {};
     const dimensions = {};
     const accounts = {};
-    const customRemarks = {};
+    const remarks = {};
     const collapsed = [];
     const accountingDimensionsSection = {
         collapse: value => collapsed.push(value),
@@ -37,9 +37,10 @@ test("payment labels and required mode follow payment type", () => {
         fields_dict: {payment_amounts_section: {wrapper: amounts},
             accounting_dimensions_section: {wrapper: dimensions},
             payment_accounts_section: {wrapper: accounts},
-            custom_remarks: {wrapper: customRemarks}},
+            remarks: {wrapper: remarks}},
         set_df_property: (field, property, value) => {properties[field + "." + property] = value;},
         toggle_display: (field, visible) => {properties[field + ".visible"] = visible;},
+        set_value: (field, value) => {frm.doc[field] = value;},
     };
     events.refresh(frm);
     assert.equal(properties["paid_from.label"], "Received From Account");
@@ -47,15 +48,22 @@ test("payment labels and required mode follow payment type", () => {
     assert.equal(properties["paid_amount.label"], "Received Amount");
     assert.equal(properties["party_section.label"], "Received From");
     assert.equal(properties["mode_of_payment.reqd"], 1);
-    assert.equal(properties["custom_remarks.hidden"], 0);
-    assert.equal(properties["custom_remarks.depends_on"], "");
-    assert.equal(properties["custom_remarks.visible"], true);
+    assert.equal(properties["custom_remarks.hidden"], 1);
+    assert.equal(properties["custom_remarks.visible"], false);
+    assert.equal(properties["remarks.label"], "Custom Remarks");
+    assert.equal(properties["remarks.hidden"], 0);
+    assert.equal(properties["remarks.depends_on"], "");
+    assert.equal(properties["remarks.read_only"], 0);
+    assert.equal(properties["remarks.read_only_depends_on"], "");
+    assert.equal(properties["remarks.visible"], true);
     assert.equal("accounting_dimensions_section.collapsible" in properties, false);
     assert.equal(accountingDimensionsSection.expanded_by_user, true);
     assert.deepEqual(collapsed, [false]);
     assert.equal(accounts.before, amounts);
-    assert.equal(amounts.after, customRemarks);
-    assert.equal(customRemarks.after, dimensions);
+    assert.equal(amounts.after, remarks);
+    assert.equal(remarks.after, dimensions);
+    events.remarks(frm);
+    assert.equal(frm.doc.custom_remarks, 1);
     frm.doc.payment_type = "Pay";
     events.payment_type(frm);
     assert.equal(properties["party_section.label"], "Payment To");
