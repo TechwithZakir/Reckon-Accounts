@@ -15,6 +15,7 @@ class TestNavigation(unittest.TestCase):
             "TRANSACTION_DOCTYPES",
             "MASTER_DOCTYPES",
             "SETUP_DOCTYPES",
+            "NAVIGATION_DOCTYPES",
             "STANDARD_REPORTS",
         ):
             self.assertIn(collection, source)

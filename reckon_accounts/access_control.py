@@ -33,6 +33,7 @@ SETUP_DOCTYPES = (
     "Budget",
 )
 REPORT_DOCTYPES = ("GL Entry",)
+NAVIGATION_DOCTYPES = ("Page", "Report", "Workspace", "Workspace Sidebar")
 STANDARD_REPORTS = (
     "General Ledger",
     "Trial Balance",
@@ -67,6 +68,7 @@ MANAGER_PERMISSIONS = {
     "import": 1,
     "share": 1,
 }
+PERMISSION_FIELDS = tuple(MANAGER_PERMISSIONS)
 
 
 def setup_roles_and_permissions():
@@ -75,11 +77,13 @@ def setup_roles_and_permissions():
         if not frappe.db.exists("Role", role):
             frappe.get_doc({"doctype": "Role", "role_name": role, "desk_access": 1}).insert()
 
-    for doctype in REPORT_DOCTYPES + MASTER_DOCTYPES + SETUP_DOCTYPES:
+    for doctype in NAVIGATION_DOCTYPES + REPORT_DOCTYPES + MASTER_DOCTYPES + SETUP_DOCTYPES:
         _upsert_permission(doctype, APP_ROLES[0], READ_PERMISSIONS)
     for doctype in TRANSACTION_DOCTYPES:
         _upsert_permission(doctype, APP_ROLES[0], ENTRY_PERMISSIONS)
 
+    for doctype in NAVIGATION_DOCTYPES:
+        _upsert_permission(doctype, APP_ROLES[1], READ_PERMISSIONS)
     for doctype in REPORT_DOCTYPES + TRANSACTION_DOCTYPES + MASTER_DOCTYPES + SETUP_DOCTYPES:
         _upsert_permission(doctype, APP_ROLES[1], MANAGER_PERMISSIONS)
 
@@ -95,7 +99,11 @@ def _upsert_permission(doctype, role, permissions):
         return
     filters = {"parent": doctype, "role": role, "permlevel": 0}
     name = frappe.db.exists("Custom DocPerm", filters)
-    values = {**filters, **permissions}
+    values = {
+        **filters,
+        **dict.fromkeys(PERMISSION_FIELDS, 0),
+        **permissions,
+    }
     if name:
         frappe.db.set_value("Custom DocPerm", name, values, update_modified=False)
     else:
