@@ -21,9 +21,14 @@ def execute():
         "logo_url": ICON_URL,
         "icon_image": ICON_URL,
         "hidden": 0,
-        "standard": 1,
+        # Frappe creates add_to_apps_screen icons as non-standard database records.
+        # Marking this as standard without a desktop_icon JSON file lets sync remove it.
+        "standard": 0,
         "app": APP_NAME,
         "restrict_removal": 1,
+        "parent_icon": None,
+        "link_to": None,
+        "sidebar": None,
     }
     values = {field: value for field, value in values.items() if field in fields}
 

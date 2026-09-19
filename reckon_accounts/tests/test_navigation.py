@@ -81,9 +81,13 @@ class TestNavigation(unittest.TestCase):
         source = path.read_text(encoding="utf-8")
         self.assertIn('"icon_type": "App"', source)
         self.assertIn('"link_type": "External"', source)
+        self.assertIn('"standard": 0', source)
         self.assertIn('"link": APP_ROUTE', source)
         self.assertIn('"logo_url": ICON_URL', source)
         self.assertIn('"icon_image": ICON_URL', source)
+
+        patches = (Path(__file__).parents[1] / "patches.txt").read_text(encoding="utf-8")
+        self.assertIn("reckon_accounts.patches.v0_1.restore_desktop_app_icon", patches)
 
 
 if __name__ == "__main__":
