@@ -66,9 +66,9 @@ bench or CI environment is available. No support claim follows merely from depen
 ## Home and navigation update
 
 The home workspace uses nine cards in three columns at desktop width. It includes
-all 23 app reports, nine reused standard reports, and 22 accounting DocTypes.
-Frappe 15 exposes grouped child workspaces beneath Reckon Accounts; Frappe 16
-imports the app-level Workspace Sidebar with expandable report/DocType sections.
+all 25 app reports, 14 reused standard reports, and 22 accounting DocTypes.
+Frappe 15 uses the single Reckon Accounts workspace; Frappe 16 imports the
+app-level Workspace Sidebar with expandable report/DocType sections.
 Framework permission filtering remains active. No ERPNext DocType is moved to
 this app, and no additional accounting masters are created.
 
@@ -83,6 +83,11 @@ bench --site your-site clear-cache
 Reload Desk after migration. A personalized workspace/sidebar can take precedence
 over the public app layout; use the standard public workspace when checking this
 update. Visual verification on both live framework versions remains pending.
+
+Migration removes the obsolete generated Reckon Accounts child workspaces,
+leaving one desktop app workspace. It also syncs the Payment Entry Mode of
+Payment requirement and loads the app's Payment Entry client extension. Clear
+browser assets after migration before checking dynamic labels and field order.
 
 Source references: [v15 workspace schema](https://github.com/frappe/frappe/blob/version-15/frappe/desk/doctype/workspace/workspace.json),
 [v16 sidebar sync](https://github.com/frappe/frappe/blob/version-16/frappe/model/sync.py).

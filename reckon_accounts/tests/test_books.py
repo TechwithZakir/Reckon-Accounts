@@ -334,6 +334,31 @@ class TestBookAdapters(unittest.TestCase):
         self.assertEqual(len(entries), 2)
         self.assertTrue(all(r["voucher_no"] == "PE-1" for r in entries))
 
+    def test_register_mode_and_reference_filters_use_source_document(self):
+        self.gateway.records["Mode of Payment"] = [dict(name="Bank Transfer")]
+        self.gateway.records["Payment Entry"][0].update(
+            mode_of_payment="Bank Transfer", reference_no="REF-9"
+        )
+        self.gateway.records["GL Entry"] = [
+            gl("p1", voucher_type="Payment Entry", voucher_no="PE-1"),
+            gl(
+                "p2",
+                account="Bank",
+                debit=0,
+                credit=100,
+                voucher_type="Payment Entry",
+                voucher_no="PE-1",
+            ),
+        ]
+        result = self.run_book(
+            "Receipt Register", mode_of_payment="Bank Transfer", reference_no="REF-9"
+        )
+        entries = [record for record in result.rows() if record["row_kind"] == "entry"]
+        self.assertEqual(len(entries), 2)
+        self.assertTrue(all(record["mode_of_payment"] == "Bank Transfer" for record in entries))
+        self.assertTrue(all(record["reference_no"] == "REF-9" for record in entries))
+        self.assertEqual(self.run_book("Receipt Register", reference_no="other").rows(), [])
+
     def test_all_catalog_views_have_executable_renderers(self):
         for name in BOOK_REPORTS:
             with self.subTest(name=name):

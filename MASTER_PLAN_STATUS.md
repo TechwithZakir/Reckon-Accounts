@@ -30,3 +30,14 @@ with company and posting date. Creation permissions are checked in the UI and th
 standard document API remains responsible for server validation. No posting or
 saving occurs in the launcher. Inline voucher editing and live keyboard/form QA
 remain unfinished; the launcher is not a complete custom Tally entry interface.
+
+The launcher now also shows permission-aware daily counts, the principal daily
+reports, the requested standard ERPNext registers/statements, and a Financial
+Reports link. Payment Entry uses an app client extension for Receive/Pay labels
+and moves Accounting Dimensions immediately after Amount. A synced Property
+Setter makes Mode of Payment mandatory. One public Reckon Accounts workspace is
+kept; nested navigation is delivered through the Frappe 16 Workspace Sidebar.
+
+Receipt, Payment, Bank and Journal-oriented reports expose optional Mode of
+Payment and Cheque/Reference filters and columns sourced from the permitted
+source voucher. Live reconciliation and browser QA remain external Bench gates.

@@ -1,0 +1,12 @@
+[
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-mode_of_payment-reqd",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "mode_of_payment",
+  "property": "reqd",
+  "property_type": "Check",
+  "value": "1"
+ }
+]

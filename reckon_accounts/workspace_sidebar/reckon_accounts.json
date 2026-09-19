@@ -288,6 +288,41 @@
    "child": 1
   },
   {
+   "type": "Link",
+   "label": "Trial Balance for Party",
+   "link_type": "Report",
+   "link_to": "Trial Balance for Party",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Item-wise Sales Register",
+   "link_type": "Report",
+   "link_to": "Item-wise Sales Register",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Item-wise Purchase Register",
+   "link_type": "Report",
+   "link_to": "Item-wise Purchase Register",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Sales Register",
+   "link_type": "Report",
+   "link_to": "Sales Register",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Purchase Register",
+   "link_type": "Report",
+   "link_to": "Purchase Register",
+   "child": 1
+  },
+  {
    "type": "Section Break",
    "label": "Outstanding and Reconciliation",
    "child": 0,
@@ -314,6 +349,21 @@
    "label": "Bank Reconciliation Statement",
    "link_type": "Report",
    "link_to": "Bank Reconciliation Statement",
+   "child": 1
+  },
+  {
+   "type": "Section Break",
+   "label": "ERPNext",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
+  },
+  {
+   "type": "Link",
+   "label": "Financial Reports (ERPNext)",
+   "link_type": "Workspace",
+   "link_to": "Accounting",
    "child": 1
   },
   {

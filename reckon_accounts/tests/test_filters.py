@@ -17,6 +17,11 @@ class TestFilters(unittest.TestCase):
             (filters.page, filters.page_size, filters.currency_mode), (1, 100, "company")
         )
         self.assertEqual(filters.balance_label, "Balance")
+        for field in ("mode_of_payment", "reference_no"):
+            with self.subTest(field=field):
+                self.assertEqual(
+                    self.parse(**{field: "Selected"}).balance_label, "Filtered balance"
+                )
 
     def test_invalid_dates_and_reversed_period(self):
         for value in (
@@ -43,6 +48,8 @@ class TestFilters(unittest.TestCase):
             "voucher_type",
             "voucher_no",
             "payment_type",
+            "mode_of_payment",
+            "reference_no",
         ):
             for value in ("", "   ", True, 3, ["Account"]):
                 with self.subTest(key=key, value=value), self.assertRaises(ValueError):

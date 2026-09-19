@@ -57,6 +57,11 @@ GROUPS = (
             "Profit and Loss Statement",
             "Cash Flow",
             "Financial Ratios",
+            "Trial Balance for Party",
+            "Item-wise Sales Register",
+            "Item-wise Purchase Register",
+            "Sales Register",
+            "Purchase Register",
         ),
     ),
     (
@@ -64,6 +69,7 @@ GROUPS = (
         "Report",
         ("Accounts Receivable", "Accounts Payable", "Bank Reconciliation Statement"),
     ),
+    ("ERPNext", "Workspace", ("Accounting",)),
     (
         "Transactions",
         "DocType",
@@ -108,7 +114,7 @@ GROUPS = (
 
 
 def workspace_documents():
-    """Three-column home and grouped child workspaces for the v15 sidebar."""
+    """One app workspace; Frappe 16 navigation lives in Workspace Sidebar."""
 
     def document(name, groups, sequence, parent=None):
         links, content = [], []
@@ -117,7 +123,7 @@ def workspace_documents():
             links.extend(
                 {
                     "type": "Link",
-                    "label": "Voucher Entry" if name == "voucher-entry" else name,
+                    "label": _label(name),
                     "link_type": link_type,
                     "link_to": name,
                     "is_query_report": int(link_type == "Report"),
@@ -130,7 +136,7 @@ def workspace_documents():
         return {
             "doctype": "Workspace",
             "name": name,
-            "label": "Voucher Entry" if name == "voucher-entry" else name,
+            "label": _label(name),
             "title": name,
             "module": "Reckon Accounts",
             "public": 1,
@@ -152,8 +158,6 @@ def workspace_documents():
         }
 
     yield document("Reckon Accounts", GROUPS, 20)
-    for index, group in enumerate(GROUPS):
-        yield document(f"Reckon Accounts {group[0]}", (group,), index + 1, "Reckon Accounts")
 
 
 def sidebar_document():
@@ -182,7 +186,7 @@ def sidebar_document():
         items.extend(
             {
                 "type": "Link",
-                "label": "Voucher Entry" if name == "voucher-entry" else name,
+                "label": _label(name),
                 "link_type": link_type,
                 "link_to": name,
                 "child": 1,
@@ -199,3 +203,10 @@ def sidebar_document():
         "header_icon": "accounting",
         "items": items,
     }
+
+
+def _label(name):
+    return {
+        "voucher-entry": "Voucher Entry",
+        "Accounting": "Financial Reports (ERPNext)",
+    }.get(name, name)

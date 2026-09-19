@@ -46,13 +46,24 @@ def main():
         )
     from reckon_accounts.navigation import sidebar_document, workspace_documents
 
+    expected_workspaces = set()
     for workspace in workspace_documents():
         slug = workspace["name"].lower().replace(" ", "_")
+        expected_workspaces.add(slug)
         folder = PACKAGE / "reckon_accounts" / "workspace" / slug
         folder.mkdir(parents=True, exist_ok=True)
         (folder / (slug + ".json")).write_text(
             json.dumps(workspace, indent=1) + "\n", encoding="utf-8"
         )
+    # Obsolete generated child workspaces are deliberately removed so Frappe 16
+    # exposes one desktop app icon. The Workspace Sidebar provides all navigation.
+    workspace_root = PACKAGE / "reckon_accounts" / "workspace"
+    for folder in workspace_root.iterdir():
+        if folder.is_dir() and folder.name.startswith("reckon_accounts_"):
+            if folder.name not in expected_workspaces:
+                for child in folder.iterdir():
+                    child.unlink()
+                folder.rmdir()
     folder = PACKAGE / "workspace_sidebar"
     folder.mkdir(exist_ok=True)
     (folder / "reckon_accounts.json").write_text(

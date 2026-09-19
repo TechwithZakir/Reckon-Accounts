@@ -9,7 +9,7 @@
  "icon": "accounting",
  "sequence_id": 20,
  "parent_page": "",
- "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Voucher Entry\", \"col\": 4}}, {\"id\": \"card-1\", \"type\": \"card\", \"data\": {\"card_name\": \"Ledgers\", \"col\": 4}}, {\"id\": \"card-2\", \"type\": \"card\", \"data\": {\"card_name\": \"Cash and Bank\", \"col\": 4}}, {\"id\": \"card-3\", \"type\": \"card\", \"data\": {\"card_name\": \"Groups and Analysis\", \"col\": 4}}, {\"id\": \"card-4\", \"type\": \"card\", \"data\": {\"card_name\": \"Voucher Registers\", \"col\": 4}}, {\"id\": \"card-5\", \"type\": \"card\", \"data\": {\"card_name\": \"Financial Statements\", \"col\": 4}}, {\"id\": \"card-6\", \"type\": \"card\", \"data\": {\"card_name\": \"Outstanding and Reconciliation\", \"col\": 4}}, {\"id\": \"card-7\", \"type\": \"card\", \"data\": {\"card_name\": \"Transactions\", \"col\": 4}}, {\"id\": \"card-8\", \"type\": \"card\", \"data\": {\"card_name\": \"Masters\", \"col\": 4}}, {\"id\": \"card-9\", \"type\": \"card\", \"data\": {\"card_name\": \"Accounting Setup\", \"col\": 4}}]",
+ "content": "[{\"id\": \"card-0\", \"type\": \"card\", \"data\": {\"card_name\": \"Voucher Entry\", \"col\": 4}}, {\"id\": \"card-1\", \"type\": \"card\", \"data\": {\"card_name\": \"Ledgers\", \"col\": 4}}, {\"id\": \"card-2\", \"type\": \"card\", \"data\": {\"card_name\": \"Cash and Bank\", \"col\": 4}}, {\"id\": \"card-3\", \"type\": \"card\", \"data\": {\"card_name\": \"Groups and Analysis\", \"col\": 4}}, {\"id\": \"card-4\", \"type\": \"card\", \"data\": {\"card_name\": \"Voucher Registers\", \"col\": 4}}, {\"id\": \"card-5\", \"type\": \"card\", \"data\": {\"card_name\": \"Financial Statements\", \"col\": 4}}, {\"id\": \"card-6\", \"type\": \"card\", \"data\": {\"card_name\": \"Outstanding and Reconciliation\", \"col\": 4}}, {\"id\": \"card-7\", \"type\": \"card\", \"data\": {\"card_name\": \"ERPNext\", \"col\": 4}}, {\"id\": \"card-8\", \"type\": \"card\", \"data\": {\"card_name\": \"Transactions\", \"col\": 4}}, {\"id\": \"card-9\", \"type\": \"card\", \"data\": {\"card_name\": \"Masters\", \"col\": 4}}, {\"id\": \"card-10\", \"type\": \"card\", \"data\": {\"card_name\": \"Accounting Setup\", \"col\": 4}}]",
  "links": [
   {
    "type": "Card Break",
@@ -260,6 +260,41 @@
    "is_query_report": 1
   },
   {
+   "type": "Link",
+   "label": "Trial Balance for Party",
+   "link_type": "Report",
+   "link_to": "Trial Balance for Party",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Item-wise Sales Register",
+   "link_type": "Report",
+   "link_to": "Item-wise Sales Register",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Item-wise Purchase Register",
+   "link_type": "Report",
+   "link_to": "Item-wise Purchase Register",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Sales Register",
+   "link_type": "Report",
+   "link_to": "Sales Register",
+   "is_query_report": 1
+  },
+  {
+   "type": "Link",
+   "label": "Purchase Register",
+   "link_type": "Report",
+   "link_to": "Purchase Register",
+   "is_query_report": 1
+  },
+  {
    "type": "Card Break",
    "label": "Outstanding and Reconciliation"
   },
@@ -283,6 +318,17 @@
    "link_type": "Report",
    "link_to": "Bank Reconciliation Statement",
    "is_query_report": 1
+  },
+  {
+   "type": "Card Break",
+   "label": "ERPNext"
+  },
+  {
+   "type": "Link",
+   "label": "Financial Reports (ERPNext)",
+   "link_type": "Workspace",
+   "link_to": "Accounting",
+   "is_query_report": 0
   },
   {
    "type": "Card Break",

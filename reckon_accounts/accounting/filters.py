@@ -37,7 +37,15 @@ class LedgerFilters:
     @property
     def filtered_balance(self) -> bool:
         """Voucher filters affect opening, movement and closing, not only rows."""
-        return any((self.voucher_type, self.voucher_no, self.payment_type))
+        return any(
+            (
+                self.voucher_type,
+                self.voucher_no,
+                self.payment_type,
+                self.mode_of_payment,
+                self.reference_no,
+            )
+        )
 
     @property
     def balance_label(self) -> str:

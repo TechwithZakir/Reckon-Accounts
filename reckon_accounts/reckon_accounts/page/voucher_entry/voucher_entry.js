@@ -28,10 +28,55 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
             .text(key + " · " + __(label)).prop("disabled", !frappe.model.can_create(doctype))
             .on("click", open).appendTo(grid);
     }
-    page.add_inner_button(__("Day Book"), () => {
-        frappe.route_options = {company: company.get_value(), from_date: date.get_value(), to_date: date.get_value()};
-        frappe.set_route("query-report", "Day Book");
-    });
+
+    $("<h4 class='mt-5 mb-3'></h4>").text(__("Today's Activity")).appendTo(body);
+    const counts = $("<div></div>").css({display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px"}).appendTo(body);
+    const count_cards = [
+        ["Payment Entry", {payment_type: "Receive"}, "Receipts"],
+        ["Payment Entry", {payment_type: "Pay"}, "Payments"],
+        ["Journal Entry", {}, "Journals"],
+        ["Sales Invoice", {}, "Sales Invoices"],
+        ["Purchase Invoice", {}, "Purchase Invoices"],
+    ];
+    const refresh_counts = async () => {
+        counts.empty();
+        for (const [doctype, extra, label] of count_cards) {
+            if (!frappe.model.can_read(doctype)) continue;
+            const filters = {company: company.get_value(), posting_date: date.get_value(), docstatus: ["<", 2], ...extra};
+            let value = "—";
+            try { value = await frappe.db.count(doctype, {filters}); } catch (error) {
+                console.warn("Reckon Accounts count unavailable", doctype, error);
+            }
+            $("<div class='card p-3'></div>").append(
+                $("<div class='text-muted small'></div>").text(__(label)),
+                $("<div class='h3 mb-0'></div>").text(value),
+            ).appendTo(counts);
+        }
+    };
+    company.$input.on("change.reckonVoucherEntry", refresh_counts);
+    date.$input.on("change.reckonVoucherEntry", refresh_counts);
+    refresh_counts();
+
+    $("<h4 class='mt-5 mb-3'></h4>").text(__("Reports")).appendTo(body);
+    const reports = $("<div></div>").css({display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "10px"}).appendTo(body);
+    const report_names = ["Day Book", "Cash Book", "Bank Book", "Party Ledger",
+        "General Ledger Custom", "Payment Register", "Receipt Register", "Trial Balance",
+        "Balance Sheet", "Profit and Loss Statement", "Trial Balance for Party",
+        "Item-wise Sales Register", "Item-wise Purchase Register", "Sales Register", "Purchase Register"];
+    for (const report_name of report_names) {
+        $("<button type='button' class='btn btn-default text-left'></button>").text(__(report_name))
+            .on("click", () => {
+                frappe.route_options = {company: company.get_value(),
+                    from_date: date.get_value(), to_date: date.get_value()};
+                frappe.set_route("query-report", report_name);
+            }).appendTo(reports);
+    }
+    $("<button type='button' class='btn btn-default text-left'></button>")
+        .text(__("Financial Reports (ERPNext)"))
+        .on("click", () => frappe.set_route("accounting"))
+        .appendTo(reports);
     // One namespaced handler, active only on this route and outside dialogs.
     $(document).off("keydown.reckonVoucherEntry").on("keydown.reckonVoucherEntry", event => {
         if (frappe.get_route()[0] !== "voucher-entry" || $(".modal:visible").length ||
