@@ -1,3 +1,4 @@
+import hashlib
 import json
 import unittest
 from pathlib import Path
@@ -64,6 +65,16 @@ class TestNavigation(unittest.TestCase):
             "Financial Reports (ERPNext)",
         ):
             self.assertIn(f'"{label}"', source)
+
+    def test_desktop_app_uses_packaged_custom_icon(self):
+        from reckon_accounts import hooks
+
+        icon = hooks.add_to_apps_screen[0]
+        self.assertEqual(icon["logo"], "/assets/reckon_accounts/images/reckon-accounts-icon.png")
+        self.assertEqual(icon["route"], "/app/reckon-accounts")
+        path = Path(__file__).parents[1] / "public/images/reckon-accounts-icon.png"
+        self.assertTrue(path.is_file())
+        self.assertEqual(len(hashlib.sha256(path.read_bytes()).hexdigest()), 64)
 
 
 if __name__ == "__main__":
