@@ -1,1 +1,2 @@
 reckon_accounts.patches.v0_1.remove_generated_child_workspaces
+reckon_accounts.patches.v0_1.sync_desktop_app_icon
