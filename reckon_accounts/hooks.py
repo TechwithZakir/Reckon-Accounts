@@ -21,6 +21,8 @@ add_to_apps_screen = [
 ]
 
 required_apps = ["erpnext"]
+after_install = "reckon_accounts.access_control.setup_roles_and_permissions"
+after_migrate = ["reckon_accounts.access_control.setup_roles_and_permissions"]
 
 # Extend the standard form without changing ERPNext source files.
 doctype_js = {"Payment Entry": "public/js/payment_entry.js"}

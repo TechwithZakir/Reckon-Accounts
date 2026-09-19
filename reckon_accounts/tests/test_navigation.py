@@ -7,6 +7,19 @@ from reckon_accounts.navigation import GROUPS, sidebar_document, workspace_docum
 
 
 class TestNavigation(unittest.TestCase):
+    def test_reckon_roles_cover_workspace_and_relevant_doctypes(self):
+        roles = {row["role"] for row in next(workspace_documents())["roles"]}
+        self.assertTrue({"Reckon Accounts User", "Reckon Accounts Manager"}.issubset(roles))
+        source = (Path(__file__).parents[1] / "access_control.py").read_text(encoding="utf-8")
+        for collection in (
+            "TRANSACTION_DOCTYPES",
+            "MASTER_DOCTYPES",
+            "SETUP_DOCTYPES",
+            "STANDARD_REPORTS",
+        ):
+            self.assertIn(collection, source)
+        self.assertIn('_ensure_role_links("Workspace", "Accounting")', source)
+
     def test_one_workspace_and_three_column_cards(self):
         workspaces = list(workspace_documents())
         self.assertEqual([item["name"] for item in workspaces], ["Reckon Accounts"])

@@ -13,7 +13,12 @@ from reckon_accounts.accounting.reporting import export_csv
 
 def check_app_permission():
     """Show the desktop app only to signed-in users who can read accounting entries."""
-    return frappe.session.user != "Guest" and frappe.has_permission("GL Entry", "read")
+    if frappe.session.user == "Guest":
+        return False
+    roles = set(frappe.get_roles())
+    return bool(roles.intersection({"Reckon Accounts User", "Reckon Accounts Manager"})) or (
+        frappe.has_permission("GL Entry", "read")
+    )
 
 
 def normalize_report_filters(values):

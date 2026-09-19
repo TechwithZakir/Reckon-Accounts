@@ -148,7 +148,14 @@ def workspace_documents():
             "links": links,
             "roles": [
                 {"role": role}
-                for role in ("Accounts User", "Accounts Manager", "System Manager", "Auditor")
+                for role in (
+                    "Accounts User",
+                    "Accounts Manager",
+                    "Reckon Accounts User",
+                    "Reckon Accounts Manager",
+                    "System Manager",
+                    "Auditor",
+                )
             ],
             "charts": [],
             "custom_blocks": [],

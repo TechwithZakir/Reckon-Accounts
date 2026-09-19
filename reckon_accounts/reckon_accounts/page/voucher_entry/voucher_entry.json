@@ -13,6 +13,12 @@
    "role": "Accounts Manager"
   },
   {
+   "role": "Reckon Accounts User"
+  },
+  {
+   "role": "Reckon Accounts Manager"
+  },
+  {
    "role": "System Manager"
   }
  ]

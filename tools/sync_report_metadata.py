@@ -37,7 +37,16 @@ def main():
             "disabled": 0,
             "prepared_report": 0,
             "add_total_row": 0,
-            "roles": [{"role": role} for role in ("Accounts User", "Accounts Manager", "Auditor")],
+            "roles": [
+                {"role": role}
+                for role in (
+                    "Accounts User",
+                    "Accounts Manager",
+                    "Reckon Accounts User",
+                    "Reckon Accounts Manager",
+                    "Auditor",
+                )
+            ],
             "filters": [],
             "columns": [],
         }
