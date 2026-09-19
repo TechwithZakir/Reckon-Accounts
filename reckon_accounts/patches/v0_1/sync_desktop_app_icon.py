@@ -1,10 +1,8 @@
-"""Repair the Frappe 16 desktop icon created from the workspace."""
+"""Keep the Frappe 16 workspace desktop icon and its custom image in sync."""
 
 import frappe
 
 LABEL = "Reckon Accounts"
-APP_NAME = "reckon_accounts"
-APP_ROUTE = "/desk/reckon-accounts"
 ICON_URL = "/assets/reckon_accounts/images/reckon-accounts-icon.png"
 
 
@@ -15,19 +13,17 @@ def execute():
     meta = frappe.get_meta("Desktop Icon")
     fields = {field.fieldname for field in meta.fields}
     values = {
-        "icon_type": "App",
-        "link_type": "External",
-        "link": APP_ROUTE,
+        "icon_type": "Link",
+        "link_type": "Workspace Sidebar",
+        "link_to": LABEL,
+        "link": None,
         "logo_url": ICON_URL,
         "icon_image": ICON_URL,
         "hidden": 0,
-        # Frappe creates add_to_apps_screen icons as non-standard database records.
-        # Marking this as standard without a desktop_icon JSON file lets sync remove it.
         "standard": 0,
-        "app": APP_NAME,
+        "app": None,
         "restrict_removal": 1,
         "parent_icon": None,
-        "link_to": None,
         "sidebar": None,
     }
     values = {field: value for field, value in values.items() if field in fields}

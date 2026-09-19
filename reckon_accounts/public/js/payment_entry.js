@@ -24,12 +24,17 @@
         const dimensions = frm.fields_dict.accounting_dimensions_section?.wrapper;
         const amounts = frm.fields_dict.payment_amounts_section?.wrapper;
         const accounts = frm.fields_dict.payment_accounts_section?.wrapper;
+        const customRemarks = frm.fields_dict.custom_remarks?.wrapper;
         if (amounts && accounts && !$(amounts).data("reckon-moved")) {
             $(accounts).before(amounts);
             $(amounts).data("reckon-moved", true);
         }
-        if (dimensions && amounts && !$(dimensions).data("reckon-moved")) {
-            $(amounts).after(dimensions);
+        if (customRemarks && amounts && !$(customRemarks).data("reckon-moved")) {
+            $(amounts).after(customRemarks);
+            $(customRemarks).data("reckon-moved", true);
+        }
+        if (dimensions && (customRemarks || amounts) && !$(dimensions).data("reckon-moved")) {
+            $(customRemarks || amounts).after(dimensions);
             $(dimensions).data("reckon-moved", true);
         }
     }
@@ -50,6 +55,9 @@
             frm.set_df_property(fieldname, "label", label);
         }
         frm.set_df_property("mode_of_payment", "reqd", 1);
+        frm.set_df_property("custom_remarks", "hidden", 0);
+        frm.set_df_property("custom_remarks", "depends_on", "");
+        frm.toggle_display("custom_remarks", true);
         arrange_sections(frm);
     }
 
