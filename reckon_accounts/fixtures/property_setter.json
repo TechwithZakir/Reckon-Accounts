@@ -8,5 +8,65 @@
   "property": "reqd",
   "property_type": "Check",
   "value": "1"
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-custom_remarks-default",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "custom_remarks",
+  "property": "default",
+  "property_type": "Data",
+  "value": "1"
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-custom_remarks-hidden",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "custom_remarks",
+  "property": "hidden",
+  "property_type": "Check",
+  "value": "1"
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-remarks-depends_on",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "remarks",
+  "property": "depends_on",
+  "property_type": "Data",
+  "value": ""
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-remarks-hidden",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "remarks",
+  "property": "hidden",
+  "property_type": "Check",
+  "value": "0"
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-remarks-label",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "remarks",
+  "property": "label",
+  "property_type": "Data",
+  "value": "Custom Remarks"
+ },
+ {
+  "doctype": "Property Setter",
+  "name": "Payment Entry-remarks-read_only_depends_on",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "remarks",
+  "property": "read_only_depends_on",
+  "property_type": "Data",
+  "value": ""
  }
 ]

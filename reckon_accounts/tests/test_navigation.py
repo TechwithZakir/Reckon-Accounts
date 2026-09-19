@@ -54,6 +54,17 @@ class TestNavigation(unittest.TestCase):
         self.assertEqual(records[0]["field_name"], "mode_of_payment")
         self.assertEqual((records[0]["property"], records[0]["value"]), ("reqd", "1"))
 
+    def test_payment_remarks_use_standard_metadata_layout(self):
+        fixture_path = Path(__file__).parents[1] / "fixtures" / "property_setter.json"
+        records = json.loads(fixture_path.read_text(encoding="utf-8"))
+        settings = {(row.get("field_name"), row["property"]): row["value"] for row in records}
+        self.assertEqual(settings[("custom_remarks", "hidden")], "1")
+        self.assertEqual(settings[("custom_remarks", "default")], "1")
+        self.assertEqual(settings[("remarks", "label")], "Custom Remarks")
+        self.assertEqual(settings[("remarks", "read_only_depends_on")], "")
+        source = (Path(__file__).parents[1] / "payment_entry_setup.py").read_text(encoding="utf-8")
+        self.assertIn('field_order.index("mode_of_payment") + 1', source)
+
     def test_navigation_names_are_unique(self):
         links = [(kind, name) for _, kind, names in GROUPS for name in names]
         self.assertEqual(len(links), len(set(links)))

@@ -26,6 +26,28 @@ after_install = "reckon_accounts.access_control.setup_roles_and_permissions"
 after_migrate = [
     "reckon_accounts.access_control.setup_roles_and_permissions",
     "reckon_accounts.patches.v0_1.sync_desktop_app_icon.execute",
+    "reckon_accounts.payment_entry_setup.configure_payment_entry",
+]
+
+fixtures = [
+    {
+        "dt": "Property Setter",
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Payment Entry-mode_of_payment-reqd",
+                    "Payment Entry-custom_remarks-default",
+                    "Payment Entry-custom_remarks-hidden",
+                    "Payment Entry-remarks-depends_on",
+                    "Payment Entry-remarks-hidden",
+                    "Payment Entry-remarks-label",
+                    "Payment Entry-remarks-read_only_depends_on",
+                ],
+            ]
+        ],
+    }
 ]
 
 # Extend the standard form without changing ERPNext source files.

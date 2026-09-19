@@ -24,31 +24,12 @@
         const dimensions = frm.fields_dict.accounting_dimensions_section?.wrapper;
         const amounts = frm.fields_dict.payment_amounts_section?.wrapper;
         const accounts = frm.fields_dict.payment_accounts_section?.wrapper;
-        const remarks = frm.fields_dict.remarks?.wrapper;
         if (amounts && accounts && !$(amounts).data("reckon-moved")) {
             $(accounts).before(amounts);
             $(amounts).data("reckon-moved", true);
         }
-        let remarksSection = frm.$wrapper.find(".reckon-custom-remarks-section").first();
-        if (!remarksSection.length && amounts) {
-            remarksSection = $(
-                '<div class="form-section reckon-custom-remarks-section">' +
-                    '<div class="section-body">' +
-                        '<div class="row">' +
-                            '<div class="form-column col-sm-6 reckon-custom-remarks-column"></div>' +
-                            '<div class="form-column col-sm-6"></div>' +
-                        "</div>" +
-                    "</div>" +
-                "</div>"
-            );
-            $(amounts).after(remarksSection);
-        }
-        if (remarks && remarksSection.length && !$(remarks).data("reckon-moved")) {
-            remarksSection.find(".reckon-custom-remarks-column").append(remarks);
-            $(remarks).data("reckon-moved", true);
-        }
-        if (dimensions && remarksSection.length && !$(dimensions).data("reckon-moved")) {
-            remarksSection.after(dimensions);
+        if (dimensions && amounts && !$(dimensions).data("reckon-moved")) {
+            $(amounts).after(dimensions);
             $(dimensions).data("reckon-moved", true);
         }
     }
@@ -69,14 +50,6 @@
             frm.set_df_property(fieldname, "label", label);
         }
         frm.set_df_property("mode_of_payment", "reqd", 1);
-        frm.set_df_property("custom_remarks", "hidden", 1);
-        frm.toggle_display("custom_remarks", false);
-        frm.set_df_property("remarks", "label", __("Custom Remarks"));
-        frm.set_df_property("remarks", "hidden", 0);
-        frm.set_df_property("remarks", "depends_on", "");
-        frm.set_df_property("remarks", "read_only", 0);
-        frm.set_df_property("remarks", "read_only_depends_on", "");
-        frm.toggle_display("remarks", true);
         arrange_sections(frm);
     }
 
@@ -87,10 +60,5 @@
             expand_accounting_dimensions(frm);
         },
         payment_type: apply_payment_labels,
-        remarks(frm) {
-            if (!frm.doc.custom_remarks) {
-                frm.set_value("custom_remarks", 1);
-            }
-        },
     });
 })();
