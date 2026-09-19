@@ -29,12 +29,26 @@
             $(accounts).before(amounts);
             $(amounts).data("reckon-moved", true);
         }
-        if (remarks && amounts && !$(remarks).data("reckon-moved")) {
-            $(amounts).after(remarks);
+        let remarksSection = frm.$wrapper.find(".reckon-custom-remarks-section").first();
+        if (!remarksSection.length && amounts) {
+            remarksSection = $(
+                '<div class="form-section reckon-custom-remarks-section">' +
+                    '<div class="section-body">' +
+                        '<div class="row">' +
+                            '<div class="form-column col-sm-6 reckon-custom-remarks-column"></div>' +
+                            '<div class="form-column col-sm-6"></div>' +
+                        "</div>" +
+                    "</div>" +
+                "</div>"
+            );
+            $(amounts).after(remarksSection);
+        }
+        if (remarks && remarksSection.length && !$(remarks).data("reckon-moved")) {
+            remarksSection.find(".reckon-custom-remarks-column").append(remarks);
             $(remarks).data("reckon-moved", true);
         }
-        if (dimensions && (remarks || amounts) && !$(dimensions).data("reckon-moved")) {
-            $(remarks || amounts).after(dimensions);
+        if (dimensions && remarksSection.length && !$(dimensions).data("reckon-moved")) {
+            remarksSection.after(dimensions);
             $(dimensions).data("reckon-moved", true);
         }
     }

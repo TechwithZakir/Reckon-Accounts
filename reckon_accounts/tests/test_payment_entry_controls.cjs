@@ -7,21 +7,32 @@ const test = require("node:test");
 function load() {
     let handlers;
     const moved = new WeakSet();
-    const sandbox = {
-        __: value => value,
-        $: element => ({
+    const remarksColumn = {children: []};
+    const remarksSection = {
+        length: 1,
+        after: element => {remarksSection.afterElement = element;},
+        find: () => ({append: element => remarksColumn.children.push(element)}),
+        first: () => remarksSection,
+    };
+    const jq = element => {
+        if (typeof element === "string") return remarksSection;
+        return {
             data: (key, value) => value === undefined ? moved.has(element) : moved.add(element),
             after: child => { element.after = child; },
             before: child => { element.before = child; },
-        }),
+        };
+    };
+    const sandbox = {
+        __: value => value,
+        $: jq,
         frappe: {ui: {form: {on: (doctype, events) => { assert.equal(doctype, "Payment Entry"); handlers = events; }}}},
     };
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../public/js/payment_entry.js"), "utf8"), sandbox);
-    return handlers;
+    return {handlers, remarksColumn, remarksSection};
 }
 
 test("payment labels and required mode follow payment type", () => {
-    const events = load();
+    const {handlers: events, remarksColumn, remarksSection} = load();
     const properties = {};
     const amounts = {};
     const dimensions = {};
@@ -33,6 +44,7 @@ test("payment labels and required mode follow payment type", () => {
     };
     const frm = {
         doc: {payment_type: "Receive"},
+        $wrapper: {find: () => remarksSection},
         layout: {sections_dict: {accounting_dimensions_section: accountingDimensionsSection}},
         fields_dict: {payment_amounts_section: {wrapper: amounts},
             accounting_dimensions_section: {wrapper: dimensions},
@@ -60,8 +72,8 @@ test("payment labels and required mode follow payment type", () => {
     assert.equal(accountingDimensionsSection.expanded_by_user, true);
     assert.deepEqual(collapsed, [false]);
     assert.equal(accounts.before, amounts);
-    assert.equal(amounts.after, remarks);
-    assert.equal(remarks.after, dimensions);
+    assert.deepEqual(remarksColumn.children, [remarks]);
+    assert.equal(remarksSection.afterElement, dimensions);
     events.remarks(frm);
     assert.equal(frm.doc.custom_remarks, 1);
     frm.doc.payment_type = "Pay";
