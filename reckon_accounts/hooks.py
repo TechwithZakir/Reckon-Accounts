@@ -22,6 +22,9 @@ add_to_apps_screen = [
 ]
 
 required_apps = ["erpnext"]
+override_doctype_class = {
+    "Payment Entry": "reckon_accounts.overrides.payment_entry.PaymentEntry",
+}
 after_install = "reckon_accounts.access_control.setup_roles_and_permissions"
 after_migrate = [
     "reckon_accounts.access_control.setup_roles_and_permissions",
@@ -30,6 +33,10 @@ after_migrate = [
 ]
 
 fixtures = [
+    {
+        "dt": "Custom Field",
+        "filters": [["name", "=", "Payment Entry-custom_voucher_subtype"]],
+    },
     {
         "dt": "Property Setter",
         "filters": [

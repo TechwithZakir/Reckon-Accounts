@@ -30,17 +30,20 @@ Implemented now:
 - `accounting/service.py`: multi-section running balances, page carry-forward and detail-side totals.
 - `accounting/reporting.py`: report columns, summaries, scope disclosure and full CSV rendering.
 - `api.py`: permission-checked full export, metadata and selection searches.
-- `accounting/voucher_service.py`: direct Payment/Receipt voucher service that
-  validates accounts and creates submitted Journal Entries for non-party Expense
-  and Income vouchers while leaving party settlement to Payment Entry.
+- `accounting/voucher_service.py`: compatibility API that creates direct Expense
+  and Income vouchers as submitted Payment Entry documents.
+- `overrides/payment_entry.py`: opt-in Payment Entry controller behavior for the
+  Direct Expense and Direct Income subtypes, including account validation and the
+  second standard GL leg.
 - `public/js/report_filters.js`: shared filters for all 25 custom reports, including
   Cost Center, Project when supported by the GL schema, Party Type and Party;
   dimension dialog, safe formatting and drill-down.
-- `public/js/voucher_page.js`: shared Desk UI for Payment Voucher and Receipt Voucher.
+- `public/js/payment_entry.js`: standard Payment Entry layout, subtype controls and
+  direct account filters.
 - `reckon_accounts/report/`: 25 thin Script Report entry points and registration metadata.
 
-See [voucher architecture](VOUCHER_ARCHITECTURE.md) for the Payment Voucher and
-Receipt Voucher design, upstream ERPNext source evidence and live validation gates.
+See [voucher architecture](VOUCHER_ARCHITECTURE.md) for the standard Payment Entry
+design, upstream ERPNext source evidence and live validation gates.
 
 The balance functions operate on an already filtered, authorized, single-currency
 scope. They do not decide which records constitute an opening balance. Adapters

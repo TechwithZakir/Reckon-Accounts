@@ -1,0 +1,15 @@
+[
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_voucher_subtype",
+  "fieldname": "custom_voucher_subtype",
+  "fieldtype": "Select",
+  "insert_after": "payment_type",
+  "label": "Voucher Subtype",
+  "options": "Party Settlement\nDirect Expense\nDirect Income",
+  "default": "Party Settlement",
+  "description": "Use Direct Expense or Direct Income for non-party entries.",
+  "translatable": 1
+ }
+]

@@ -28,61 +28,53 @@ still inspect the actual target bench before release.
 
 ## Accounting decision
 
-Direct Expense and Direct Income vouchers create standard submitted ERPNext
-`Journal Entry` documents. This avoids fake Customers or Suppliers and keeps
-Expense and Income accounts out of Payable and Receivable settlement flows.
+All payment flows use the standard ERPNext `Payment Entry` DocType. Party
+settlements and contra entries retain the native ERPNext behavior. Direct Expense
+uses `Voucher Subtype = Direct Expense` and `Payment Type = Pay`; Direct Income uses
+`Voucher Subtype = Direct Income` and `Payment Type = Receive`.
 
-Supplier payments and Customer receipts remain standard `Payment Entry` documents.
-The custom pages open a new Payment Entry with `payment_type = Pay` or
-`payment_type = Receive` rather than duplicating ERPNext allocation, outstanding,
-exchange-rate, Payment Ledger, advance and reconciliation behavior.
-
-No code writes `GL Entry` directly. The Journal Entry controller calls ERPNext GL
-posting, frozen/closed-period checks, budget checks, accounting dimension handling,
-currency validation and cancellation rules.
+ERPNext normally requires a party for Pay and Receive. The app's narrow Payment
+Entry controller extension removes that requirement only for the two direct
+subtypes, validates the selected accounts, and adds the expense or income GL leg
+through the standard Payment Entry posting lifecycle. No code writes `GL Entry`
+directly and no fake party is created.
 
 ## Account filtering and validation
 
-Payment Voucher, Direct Expense:
+Direct Expense:
 
 - Paid From: selected company, non-group, `account_type in ("Cash", "Bank")`
 - Expense Account: selected company, non-group, `root_type = "Expense"`
-- Journal Entry rows: Expense debit, Cash/Bank credit
+- Payment Entry rows: Expense debit, Cash/Bank credit
 
-Receipt Voucher, Direct Income:
+Direct Income:
 
 - Received To: selected company, non-group, `account_type in ("Cash", "Bank")`
 - Income Account: selected company, non-group, `root_type = "Income"`
-- Journal Entry rows: Cash/Bank debit, Income credit
+- Payment Entry rows: Cash/Bank debit, Income credit
 
-Browser filters are for usability only. `reckon_accounts.accounting.voucher_service`
-revalidates company, account class, non-group accounts, distinct debit/credit
-accounts, positive amounts, Mode of Payment default account and accounting
-dimensions server-side.
+Browser filters are for usability only. The Payment Entry controller and the
+compatibility API revalidate company, account class, non-group accounts, distinct
+accounts, positive amounts, Mode of Payment and accounting dimensions server-side.
 
 ## Permissions and lifecycle
 
 The service uses normal Frappe permissions and does not pass
-`ignore_permissions=True`. A user must be able to create `Journal Entry` for direct
-vouchers and create `Payment Entry` for party vouchers.
+`ignore_permissions=True`. A user must be able to create `Payment Entry`.
 
-Submitted direct vouchers are submitted Journal Entries. Cancellation, amendment,
-frozen period behavior, GL reversal and audit trail follow standard ERPNext
-Journal Entry rules. The user is shown the generated Journal Entry number and can
-open or print it from the success panel.
+Submitted direct vouchers are submitted Payment Entries. Cancellation, amendment,
+frozen period behavior, GL reversal and audit trail follow standard ERPNext Payment
+Entry rules.
 
 ## Attachments
 
-The Desk page upload control creates a File first. After successful submission, the
-page resolves that File by `file_url` and attaches it to the generated Journal
-Entry, keeping supporting bills and receipts traceable from the accounting
-document.
+Attachments continue to use the standard Payment Entry form and document flow.
 
 ## Upgrade safety
 
 All code lives inside `reckon_accounts`. The implementation does not modify
-ERPNext/Frappe source, monkey-patch accounting controllers, or relax Payment Entry
-account filters to make Income or Expense accounts act like party accounts.
+ERPNext/Frappe source; the controller override is limited to explicit direct
+subtypes and never changes normal party settlement behavior.
 
 ## Validation still required on a bench
 

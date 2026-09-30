@@ -14,7 +14,8 @@ function load() {
             after: child => { element.after = child; },
             before: child => { element.before = child; },
         }),
-        frappe: {ui: {form: {on: (doctype, events) => { assert.equal(doctype, "Payment Entry"); handlers = events; }}}},
+        frappe: {boot: {party_account_types: {Supplier: "Payable", Customer: "Receivable"}},
+            ui: {form: {on: (doctype, events) => { assert.equal(doctype, "Payment Entry"); handlers = events; }}}},
     };
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../public/js/payment_entry.js"), "utf8"), sandbox);
     return handlers;
@@ -37,6 +38,8 @@ test("payment labels and required mode follow payment type", () => {
             accounting_dimensions_section: {wrapper: dimensions},
             payment_accounts_section: {wrapper: accounts}},
         set_df_property: (field, property, value) => {properties[field + "." + property] = value;},
+        toggle_display: () => {},
+        set_query: () => {},
     };
     events.refresh(frm);
     assert.equal(properties["paid_from.label"], "Received From Account");
@@ -53,4 +56,24 @@ test("payment labels and required mode follow payment type", () => {
     events.payment_type(frm);
     assert.equal(properties["party_section.label"], "Payment To");
     assert.equal(properties["paid_amount.label"], "Paid Amount");
+});
+
+test("direct expense and income subtypes map to Pay and Receive", () => {
+    const events = load();
+    const values = [];
+    const frm = {
+        doc: {payment_type: "Pay", custom_voucher_subtype: "Direct Expense"},
+        layout: {sections_dict: {}},
+        fields_dict: {},
+        set_df_property: () => {},
+        toggle_display: () => {},
+        set_query: () => {},
+        set_value: (field, value) => values.push([field, value]),
+    };
+    events.custom_voucher_subtype(frm);
+    assert.deepEqual(values.slice(0, 1), [["payment_type", "Pay"]]);
+    frm.doc.custom_voucher_subtype = "Direct Income";
+    frm.doc.payment_type = "Receive";
+    events.custom_voucher_subtype(frm);
+    assert.ok(values.some(([field, value]) => field === "payment_type" && value === "Receive"));
 });

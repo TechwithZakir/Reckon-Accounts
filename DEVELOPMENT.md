@@ -91,17 +91,12 @@ descendants through the adapter; other configured Accounting Dimensions remain i
 the Dimensions dialog. Existing `dimensions` URLs containing Cost Center or Project
 remain supported for compatibility.
 
-Payment Voucher and Receipt Voucher add dedicated Desk pages:
-
-- `/app/payment-voucher`
-- `/app/receipt-voucher`
-
-Direct Expense and Direct Income create submitted Journal Entries with `PV-.YYYY.-`
-and `RV-.YYYY.-` naming series respectively. Supplier and Customer modes open
-standard Payment Entry with the relevant payment type. Validate these pages on a
-disposable bench before production rollout because local source checks cannot
-prove GL posting, closed-period behavior, Payment Ledger behavior or Desk upload
-handling.
+Payment and Receipt use the standard `/desk/payment-entry` form. The Voucher Entry
+dashboard opens F5 as `Pay + Direct Expense` and F6 as `Receive + Direct Income`.
+Party settlements still use the native party fields, while direct subtypes use
+company Cash/Bank plus Expense or Income accounts. Validate direct postings on a
+disposable bench before production rollout because local source checks cannot prove
+GL posting, closed-period behavior, Payment Ledger behavior or Desk upload handling.
 
 Migration removes the obsolete generated Reckon Accounts child workspaces,
 leaving one desktop app workspace. It also syncs the Payment Entry Mode of

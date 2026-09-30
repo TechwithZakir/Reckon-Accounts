@@ -217,13 +217,13 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def direct_payment_voucher(values):
-    """Create a direct-expense Payment Voucher backed by Journal Entry."""
+    """Create a direct-expense Payment Entry with payment type Pay."""
     return create_direct_expense(values)
 
 
 @frappe.whitelist()
 def direct_receipt_voucher(values):
-    """Create a direct-income Receipt Voucher backed by Journal Entry."""
+    """Create a direct-income Payment Entry with payment type Receive."""
     return create_direct_income(values)
 
 

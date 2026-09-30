@@ -1,4 +1,9 @@
 (() => {
+    const direct_subtypes = {
+        "Direct Expense": {payment_type: "Pay", profit_loss_root_type: "Expense"},
+        "Direct Income": {payment_type: "Receive", profit_loss_root_type: "Income"},
+    };
+
     const labels = {
         Receive: {
             paid_from: __("Received From Account"),
@@ -53,12 +58,90 @@
         arrange_sections(frm);
     }
 
+    function apply_direct_layout(frm) {
+        const direct = direct_subtypes[frm.doc.custom_voucher_subtype];
+        const direct_mode = Boolean(direct);
+        const party_fields = [
+            "party_section", "party_type", "party", "party_name", "bank_account",
+            "party_bank_account", "contact_person", "contact_email",
+            "book_advance_payments_in_separate_party_account", "reconcile_on_advance_payment_date",
+            "apply_tds", "tax_withholding_category", "taxes_and_charges_section",
+            "deductions_or_loss_section",
+        ];
+        for (const fieldname of party_fields) frm.toggle_display(fieldname, !direct_mode);
+        frm.set_df_property("references", "hidden", direct_mode ? 1 : 0);
+
+        if (!direct_mode) {
+            frm.set_df_property("payment_accounts_section", "label", __("Payment From / To"));
+            frm.set_df_property("paid_from", "label", labels[frm.doc.payment_type]?.paid_from || __("Paid From"));
+            frm.set_df_property("paid_to", "label", labels[frm.doc.payment_type]?.paid_to || __("Paid To"));
+            return;
+        }
+
+        const is_expense = frm.doc.custom_voucher_subtype === "Direct Expense";
+        frm.set_df_property(
+            "payment_accounts_section",
+            "label",
+            is_expense ? __("Expense Payment Accounts") : __("Income Receipt Accounts"),
+        );
+        frm.set_df_property("paid_from", "label", is_expense ? __("Paid From (Cash / Bank)") : __("Income Account"));
+        frm.set_df_property("paid_to", "label", is_expense ? __("Expense Account") : __("Received To (Cash / Bank)"));
+        frm.set_df_property("paid_amount", "label", is_expense ? __("Paid Amount") : __("Received Amount"));
+        frm.set_df_property("received_amount", "label", is_expense ? __("Expense Amount") : __("Received Amount"));
+    }
+
+    function set_account_queries(frm) {
+        const direct = direct_subtypes[frm.doc.custom_voucher_subtype];
+        const standard_account_types = fieldname => {
+            if (frm.doc.payment_type === "Internal Transfer") return ["Bank", "Cash"];
+            if (fieldname === "paid_from" && frm.doc.payment_type === "Pay") return ["Bank", "Cash"];
+            if (fieldname === "paid_to" && frm.doc.payment_type === "Receive") return ["Bank", "Cash"];
+            return frm.doc.party_type && frappe.boot.party_account_types
+                ? [frappe.boot.party_account_types[frm.doc.party_type]]
+                : [];
+        };
+        frm.set_query("paid_from", () => {
+            const filters = {company: frm.doc.company, is_group: 0};
+            if (direct?.payment_type === "Receive") filters.root_type = "Income";
+            else filters.account_type = ["in", direct ? ["Bank", "Cash"] : standard_account_types("paid_from")];
+            return {filters};
+        });
+        frm.set_query("paid_to", () => {
+            const filters = {company: frm.doc.company, is_group: 0};
+            if (direct?.payment_type === "Pay") filters.root_type = "Expense";
+            else filters.account_type = ["in", direct ? ["Bank", "Cash"] : standard_account_types("paid_to")];
+            return {filters};
+        });
+    }
+
+    function apply_customization(frm) {
+        apply_payment_labels(frm);
+        apply_direct_layout(frm);
+        set_account_queries(frm);
+    }
+
     frappe.ui.form.on("Payment Entry", {
-        setup: apply_payment_labels,
+        setup: apply_customization,
         refresh(frm) {
-            apply_payment_labels(frm);
+            apply_customization(frm);
             expand_accounting_dimensions(frm);
         },
-        payment_type: apply_payment_labels,
+        payment_type(frm) {
+            const direct = direct_subtypes[frm.doc.custom_voucher_subtype];
+            if (direct && frm.doc.payment_type !== direct.payment_type) {
+                frm.set_value("custom_voucher_subtype", "Party Settlement");
+            }
+            apply_customization(frm);
+        },
+        custom_voucher_subtype(frm) {
+            const direct = direct_subtypes[frm.doc.custom_voucher_subtype];
+            if (direct) {
+                frm.set_value("payment_type", direct.payment_type);
+                for (const fieldname of ["party_type", "party", "party_name", "paid_from", "paid_to"]) {
+                    frm.set_value(fieldname, null);
+                }
+            }
+            apply_customization(frm);
+        },
     });
 })();

@@ -1,4 +1,4 @@
-"""Tally-style direct voucher creation using standard ERPNext documents."""
+"""Backward-compatible API helpers for direct Payment Entry vouchers."""
 
 from __future__ import annotations
 
@@ -13,12 +13,10 @@ def _(value):
 
 
 CASH_BANK_TYPES = {"Cash", "Bank"}
-DIRECT_PAYMENT_SERIES = "PV-.YYYY.-"
-DIRECT_RECEIPT_SERIES = "RV-.YYYY.-"
 
 
 def create_direct_expense(values):
-    """Create a submitted Journal Entry for a non-party Payment Voucher."""
+    """Create a direct expense as a standard Payment Entry with type Pay."""
     data = _coerce(values)
     company = _required(data, "company")
     amount = _positive_amount(data.get("amount"))
@@ -28,51 +26,59 @@ def create_direct_expense(values):
     )
     _validate_distinct(cash_bank.name, expense.name)
     dimensions = _validated_dimensions(data, company)
-    remark = _voucher_remark("Direct Expense via Reckon Payment Voucher", data, "paid_to")
-    doc = _journal_entry(
+    remark = _voucher_remark("Direct Expense Payment", data, "paid_to")
+    doc = _payment_entry(
         company=company,
         posting_date=_required(data, "posting_date"),
-        naming_series=DIRECT_PAYMENT_SERIES,
-        mode_of_payment=data.get("mode_of_payment"),
-        cheque_no=data.get("reference_number"),
-        cheque_date=data.get("reference_date"),
-        pay_to_recd_from=data.get("paid_to"),
-        remark=remark,
-        user_remark=remark,
-        accounts=[
-            {"account": expense.name, "debit_in_account_currency": amount, **dimensions},
-            {"account": cash_bank.name, "credit_in_account_currency": amount, **dimensions},
-        ],
+        payment_type="Pay",
+        custom_voucher_subtype="Direct Expense",
+        paid_from=cash_bank.name,
+        paid_to=expense.name,
+        paid_amount=amount,
+        received_amount=amount,
+        mode_of_payment=_required(data, "mode_of_payment"),
+        reference_no=data.get("reference_number"),
+        reference_date=data.get("reference_date"),
+        cost_center=dimensions.pop("cost_center", None),
+        project=dimensions.pop("project", None),
+        custom_remarks=1,
+        remarks=remark,
+        **dimensions,
     )
-    return _submit_and_response(doc, "Payment Voucher Created Successfully")
+    return _submit_and_response(doc, "Payment Entry Created Successfully")
 
 
 def create_direct_income(values):
-    """Create a submitted Journal Entry for a non-party Receipt Voucher."""
+    """Create a direct income as a standard Payment Entry with type Receive."""
     data = _coerce(values)
     company = _required(data, "company")
     amount = _positive_amount(data.get("amount"))
     cash_bank = _validate_cash_bank_account(data.get("received_to"), company, "Received To")
-    income = _validate_profit_loss_account(data.get("income_account"), company, "Income", "Income Account")
+    income = _validate_profit_loss_account(
+        data.get("income_account"), company, "Income", "Income Account"
+    )
     _validate_distinct(cash_bank.name, income.name)
     dimensions = _validated_dimensions(data, company)
-    remark = _voucher_remark("Direct Income via Reckon Receipt Voucher", data, "received_from")
-    doc = _journal_entry(
+    remark = _voucher_remark("Direct Income Receipt", data, "received_from")
+    doc = _payment_entry(
         company=company,
         posting_date=_required(data, "posting_date"),
-        naming_series=DIRECT_RECEIPT_SERIES,
-        mode_of_payment=data.get("mode_of_payment"),
-        cheque_no=data.get("reference_number"),
-        cheque_date=data.get("reference_date"),
-        pay_to_recd_from=data.get("received_from"),
-        remark=remark,
-        user_remark=remark,
-        accounts=[
-            {"account": cash_bank.name, "debit_in_account_currency": amount, **dimensions},
-            {"account": income.name, "credit_in_account_currency": amount, **dimensions},
-        ],
+        payment_type="Receive",
+        custom_voucher_subtype="Direct Income",
+        paid_from=income.name,
+        paid_to=cash_bank.name,
+        paid_amount=amount,
+        received_amount=amount,
+        mode_of_payment=_required(data, "mode_of_payment"),
+        reference_no=data.get("reference_number"),
+        reference_date=data.get("reference_date"),
+        cost_center=dimensions.pop("cost_center", None),
+        project=dimensions.pop("project", None),
+        custom_remarks=1,
+        remarks=remark,
+        **dimensions,
     )
-    return _submit_and_response(doc, "Receipt Voucher Created Successfully")
+    return _submit_and_response(doc, "Payment Entry Created Successfully")
 
 
 def get_default_payment_account(company, mode_of_payment):
@@ -91,7 +97,7 @@ def get_default_payment_account(company, mode_of_payment):
 
 
 def get_accounting_dimensions():
-    """Expose enabled accounting dimensions for the voucher pages."""
+    """Return enabled accounting dimensions for compatibility with older clients."""
     rows = frappe.get_all(
         "Accounting Dimension",
         filters={"disabled": 0},
@@ -107,6 +113,11 @@ def get_accounting_dimensions():
         for row in rows
         if row.fieldname not in {"cost_center", "project"}
     ]
+
+
+def _payment_entry(**values):
+    frappe.has_permission("Payment Entry", "create", throw=True)
+    return frappe.get_doc({"doctype": "Payment Entry", **values})
 
 
 def _coerce(values):
@@ -164,7 +175,7 @@ def _account(name, label):
 
 def _validate_distinct(first, second):
     if first == second:
-        frappe.throw(_("Debit and credit accounts must be different"))
+        frappe.throw(_("Payment Entry accounts must be different"))
 
 
 def _validated_dimensions(data, company):
@@ -189,28 +200,20 @@ def _dimension_fields():
     return fields
 
 
-def _journal_entry(**values):
-    frappe.has_permission("Journal Entry", "create", throw=True)
-    return frappe.get_doc({"doctype": "Journal Entry", "voucher_type": "Journal Entry", **values})
-
-
 def _submit_and_response(doc, message):
     doc.insert()
     doc.submit()
+    accounts = [
+        {"account": doc.paid_to, "debit": doc.received_amount, "credit": 0},
+        {"account": doc.paid_from, "debit": 0, "credit": doc.paid_amount},
+    ]
     return {
         "message": message,
         "doctype": doc.doctype,
         "name": doc.name,
         "voucher_number": doc.name,
         "posting_date": doc.posting_date,
-        "accounts": [
-            {
-                "account": row.account,
-                "debit": row.debit_in_account_currency,
-                "credit": row.credit_in_account_currency,
-            }
-            for row in doc.accounts
-        ],
+        "accounts": accounts,
     }
 
 

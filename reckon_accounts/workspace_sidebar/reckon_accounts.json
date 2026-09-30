@@ -32,28 +32,6 @@
   },
   {
    "type": "Section Break",
-   "label": "Transactions",
-   "child": 0,
-   "collapsible": 1,
-   "keep_closed": 0,
-   "indent": 1
-  },
-  {
-   "type": "Link",
-   "label": "Payment Voucher",
-   "link_type": "Page",
-   "link_to": "payment-voucher",
-   "child": 1
-  },
-  {
-   "type": "Link",
-   "label": "Receipt Voucher",
-   "link_type": "Page",
-   "link_to": "receipt-voucher",
-   "child": 1
-  },
-  {
-   "type": "Section Break",
    "label": "Ledgers",
    "child": 0,
    "collapsible": 1,

@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 
@@ -7,71 +8,43 @@ ROOT = Path(__file__).parents[1]
 
 
 class TestVoucherCustomization(unittest.TestCase):
-    def test_direct_voucher_service_uses_journal_entry_not_gl_or_payment_entry(self):
+    def test_direct_vouchers_use_standard_payment_entry(self):
         source = (ROOT / "accounting" / "voucher_service.py").read_text(encoding="utf-8")
-        self.assertIn('"doctype": "Journal Entry"', source)
-        self.assertIn('"voucher_type": "Journal Entry"', source)
-        self.assertIn("doc.insert()", source)
-        self.assertIn("doc.submit()", source)
-        self.assertNotIn('"doctype": "GL Entry"', source)
+        self.assertIn('"doctype": "Payment Entry"', source)
+        self.assertIn('payment_type="Pay"', source)
+        self.assertIn('payment_type="Receive"', source)
+        self.assertIn('custom_voucher_subtype="Direct Expense"', source)
+        self.assertIn('custom_voucher_subtype="Direct Income"', source)
+        self.assertNotIn('"doctype": "Journal Entry"', source)
+
+    def test_payment_entry_override_adds_direct_gl_leg(self):
+        source = (ROOT / "overrides" / "payment_entry.py").read_text(encoding="utf-8")
+        self.assertIn("class PaymentEntry(ERPNextPaymentEntry)", source)
+        self.assertIn(
+            'DIRECT_SUBTYPES = {"Direct Expense": "Pay", "Direct Income": "Receive"}',
+            source,
+        )
+        self.assertIn("def add_party_gl_entries", source)
+        self.assertIn("root_type=profit_loss_root_type", source)
         self.assertNotIn("ignore_permissions=True", source)
-        self.assertNotIn("ignore_permissions = True", source)
 
-    def test_direct_vouchers_validate_expected_account_classes(self):
-        source = (ROOT / "accounting" / "voucher_service.py").read_text(encoding="utf-8")
-        self.assertIn("account.account_type not in CASH_BANK_TYPES", source)
-        self.assertIn("account.root_type != root_type", source)
-        self.assertIn("_validate_profit_loss_account(", source)
-        self.assertIn('"Expense"', source)
-        self.assertIn('"Income"', source)
-        self.assertIn("_positive_amount", source)
-        self.assertIn("amount <= 0", source)
+    def test_payment_entry_custom_field_is_fixture_synced(self):
+        records = json.loads((ROOT / "fixtures" / "custom_field.json").read_text(encoding="utf-8"))
+        field = records[0]
+        self.assertEqual(field["dt"], "Payment Entry")
+        self.assertEqual(field["fieldname"], "custom_voucher_subtype")
+        self.assertIn("Direct Expense", field["options"])
+        self.assertIn("Direct Income", field["options"])
 
-    def test_pages_route_party_modes_to_standard_payment_entry(self):
-        shared = (ROOT / "public" / "js" / "voucher_page.js").read_text(encoding="utf-8")
-        payment = (
-            ROOT / "reckon_accounts" / "page" / "payment_voucher" / "payment_voucher.js"
-        ).read_text(encoding="utf-8")
-        receipt = (
-            ROOT / "reckon_accounts" / "page" / "receipt_voucher" / "receipt_voucher.js"
-        ).read_text(encoding="utf-8")
-        self.assertIn('frappe.new_doc("Payment Entry"', shared)
-        self.assertIn('partyPaymentType: "Pay"', payment)
-        self.assertIn('partyPaymentType: "Receive"', receipt)
-        self.assertIn('root_type: "Expense"', payment)
-        self.assertIn('root_type: "Income"', receipt)
-        self.assertIn('account_type: ["in", ["Cash", "Bank"]]', shared)
-        self.assertIn("reckon_accounts.api.direct_payment_voucher", payment)
-        self.assertIn("reckon_accounts.api.direct_receipt_voucher", receipt)
-        self.assertIn('frappe.set_route("print", result.doctype, result.name, config.title)', shared)
-
-    def test_navigation_exposes_dedicated_voucher_pages(self):
+    def test_navigation_removes_dedicated_voucher_pages(self):
         links = {(kind, name) for _, kind, names in GROUPS for name in names}
-        self.assertIn(("Page", "payment-voucher"), links)
-        self.assertIn(("Page", "receipt-voucher"), links)
-        access = (ROOT / "access_control.py").read_text(encoding="utf-8")
-        self.assertIn('_ensure_role_links("Page", "payment-voucher")', access)
-        self.assertIn('_ensure_role_links("Page", "receipt-voucher")', access)
-
-    def test_voucher_pages_are_packaged_and_shared_script_loaded(self):
+        self.assertNotIn(("Page", "payment-voucher"), links)
+        self.assertNotIn(("Page", "receipt-voucher"), links)
         for page in ("payment_voucher", "receipt_voucher"):
-            self.assertTrue((ROOT / "reckon_accounts" / "page" / page / f"{page}.json").is_file())
-            page_script = ROOT / "reckon_accounts" / "page" / page / f"{page}.js"
-            self.assertTrue(page_script.is_file())
-            self.assertIn(
-                '{% include "reckon_accounts/public/js/voucher_page.js" %}',
-                page_script.read_text(encoding="utf-8"),
-            )
-        for print_format in ("payment_voucher", "receipt_voucher"):
-            self.assertTrue(
-                (
-                    ROOT
-                    / "reckon_accounts"
-                    / "print_format"
-                    / print_format
-                    / f"{print_format}.json"
-                ).is_file()
-            )
+            page_root = ROOT / "reckon_accounts" / "page" / page
+            self.assertFalse((page_root / f"{page}.json").exists())
+            self.assertFalse((page_root / f"{page}.js").exists())
+        self.assertFalse((ROOT / "public" / "js" / "voucher_page.js").exists())
 
 
 if __name__ == "__main__":
