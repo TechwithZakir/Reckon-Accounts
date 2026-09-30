@@ -3,7 +3,6 @@ from pathlib import Path
 
 from reckon_accounts.navigation import GROUPS
 
-
 ROOT = Path(__file__).parents[1]
 
 
