@@ -61,15 +61,40 @@
     function apply_direct_layout(frm) {
         const direct = direct_subtypes[frm.doc.custom_voucher_subtype];
         const direct_mode = Boolean(direct);
+        const native_paid_from_visibility =
+            'eval:(in_list(["Internal Transfer", "Pay"], doc.payment_type) || doc.party)';
+        const native_paid_to_visibility =
+            'eval:(in_list(["Internal Transfer", "Receive"], doc.payment_type) || doc.party)';
+        const direct_visibility = "eval:doc.payment_type && doc.custom_voucher_subtype";
+        frm.set_df_property(
+            "paid_from",
+            "depends_on",
+            direct_mode ? direct_visibility : native_paid_from_visibility,
+        );
+        frm.set_df_property(
+            "paid_to",
+            "depends_on",
+            direct_mode ? direct_visibility : native_paid_to_visibility,
+        );
+        frm.set_df_property(
+            "payment_amounts_section",
+            "depends_on",
+            direct_mode ? direct_visibility : "eval:(doc.paid_to && doc.paid_from)",
+        );
         const party_fields = [
             "party_section", "party_type", "party", "party_name", "bank_account",
             "party_bank_account", "contact_person", "contact_email",
             "book_advance_payments_in_separate_party_account", "reconcile_on_advance_payment_date",
             "apply_tds", "tax_withholding_category", "taxes_and_charges_section",
-            "deductions_or_loss_section",
+            "purchase_taxes_and_charges_template", "sales_taxes_and_charges_template", "taxes",
+            "section_break_60", "base_total_taxes_and_charges", "column_break_61",
+            "total_taxes_and_charges", "deductions_or_loss_section", "deductions",
+            "section_tax_withholding_entry", "tax_withholding_group", "ignore_tax_withholding_threshold",
+            "override_tax_withholding_entries", "tax_withholding_entries", "section_break_14",
+            "references", "section_break_34", "total_allocated_amount", "base_total_allocated_amount",
+            "unallocated_amount", "difference_amount", "write_off_difference_amount",
         ];
         for (const fieldname of party_fields) frm.toggle_display(fieldname, !direct_mode);
-        frm.set_df_property("references", "hidden", direct_mode ? 1 : 0);
 
         if (!direct_mode) {
             frm.set_df_property("payment_accounts_section", "label", __("Payment From / To"));
