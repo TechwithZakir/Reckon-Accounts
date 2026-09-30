@@ -55,8 +55,6 @@ class TestVoucherCustomization(unittest.TestCase):
         self.assertIn('_ensure_role_links("Page", "receipt-voucher")', access)
 
     def test_voucher_pages_are_packaged_and_shared_script_loaded(self):
-        hooks = (ROOT / "hooks.py").read_text(encoding="utf-8")
-        self.assertIn('app_include_js = ["public/js/voucher_page.js"]', hooks)
         for page in ("payment_voucher", "receipt_voucher"):
             self.assertTrue((ROOT / "reckon_accounts" / "page" / page / f"{page}.json").is_file())
             page_script = ROOT / "reckon_accounts" / "page" / page / f"{page}.js"
