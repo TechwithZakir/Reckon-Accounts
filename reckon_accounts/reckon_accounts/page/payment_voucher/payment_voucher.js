@@ -1,3 +1,5 @@
+{% include "reckon_accounts/public/js/voucher_page.js" %}
+
 frappe.pages["payment-voucher"].on_page_load = function (wrapper) {
     reckon_accounts_make_voucher_page(wrapper, {
         title: __("Payment Voucher"),

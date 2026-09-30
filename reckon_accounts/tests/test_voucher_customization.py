@@ -59,7 +59,12 @@ class TestVoucherCustomization(unittest.TestCase):
         self.assertIn('app_include_js = ["public/js/voucher_page.js"]', hooks)
         for page in ("payment_voucher", "receipt_voucher"):
             self.assertTrue((ROOT / "reckon_accounts" / "page" / page / f"{page}.json").is_file())
-            self.assertTrue((ROOT / "reckon_accounts" / "page" / page / f"{page}.js").is_file())
+            page_script = ROOT / "reckon_accounts" / "page" / page / f"{page}.js"
+            self.assertTrue(page_script.is_file())
+            self.assertIn(
+                '{% include "reckon_accounts/public/js/voucher_page.js" %}',
+                page_script.read_text(encoding="utf-8"),
+            )
         for print_format in ("payment_voucher", "receipt_voucher"):
             self.assertTrue(
                 (
