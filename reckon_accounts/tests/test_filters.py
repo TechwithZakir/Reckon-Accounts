@@ -22,6 +22,8 @@ class TestFilters(unittest.TestCase):
                 self.assertEqual(
                     self.parse(**{field: "Selected"}).balance_label, "Filtered balance"
                 )
+        self.assertFalse(self.parse(cost_center="Main CC").has_voucher_scope)
+        self.assertTrue(self.parse(cost_center="Main CC").filtered_balance)
 
     def test_invalid_dates_and_reversed_period(self):
         for value in (
@@ -43,6 +45,8 @@ class TestFilters(unittest.TestCase):
         for key in (
             "company",
             "account",
+            "cost_center",
+            "project",
             "party_type",
             "party",
             "voucher_type",
@@ -70,7 +74,7 @@ class TestFilters(unittest.TestCase):
         self.assertTrue(self.parse(only_entries_without_party=True).only_entries_without_party)
 
     def test_unknown_options_never_silently_disappear(self):
-        for key in ("cost_center", "ignore_permissions", "presentation_currency"):
+        for key in ("ignore_permissions", "presentation_currency"):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 self.parse(**{key: None})
         with self.assertRaises(ValueError):
@@ -109,6 +113,11 @@ class TestFilters(unittest.TestCase):
         self.assertEqual(self.parse(page_size=500).page_size, 500)
 
     def test_dimensions_and_new_scope_options(self):
+        self.assertEqual(
+            self.parse(cost_center="Main CC", project="Project A").balance_scope()["cost_center"],
+            "Main CC",
+        )
+        self.assertEqual(self.parse(project="Project A").project, "Project A")
         filters = self.parse(
             fiscal_year="2026",
             finance_book="Primary",

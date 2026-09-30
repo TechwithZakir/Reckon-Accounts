@@ -52,3 +52,4 @@ fixtures = [
 
 # Extend the standard form without changing ERPNext source files.
 doctype_js = {"Payment Entry": "public/js/payment_entry.js"}
+app_include_js = ["public/js/voucher_page.js"]

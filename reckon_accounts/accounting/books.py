@@ -479,12 +479,10 @@ def run_book(adapter, report_name, filters, *, full=False, export=False):
         if (
             parsed.currency_mode != "company"
             or parsed.account
-            or parsed.party
-            or parsed.party_type
-            or parsed.filtered_balance
+            or parsed.has_voucher_scope
         ):
             raise ValueError(
-                "Funds Flow requires company currency and no account, party or voucher restriction"
+                "Funds Flow requires company currency and no account or voucher restriction"
             )
         selections = []
         for key, root_type in (
@@ -510,6 +508,8 @@ def run_book(adapter, report_name, filters, *, full=False, export=False):
         expanded = dict(query_filters)
         for key in (
             "account",
+            "cost_center",
+            "project",
             "party",
             "party_type",
             "dimensions",

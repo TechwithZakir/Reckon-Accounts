@@ -21,6 +21,8 @@ class TestNavigation(unittest.TestCase):
             self.assertIn(collection, source)
         self.assertIn('_ensure_role_links("Workspace", "Reckon Accounts")', source)
         self.assertIn('_ensure_role_links("Page", "voucher-entry")', source)
+        self.assertIn('_ensure_role_links("Page", "payment-voucher")', source)
+        self.assertIn('_ensure_role_links("Page", "receipt-voucher")', source)
         self.assertIn('_ensure_role_links("Workspace", "Accounting")', source)
 
     def test_one_workspace_and_three_column_cards(self):
@@ -47,6 +49,8 @@ class TestNavigation(unittest.TestCase):
         ):
             self.assertIn((report, "Report", report), links)
         self.assertIn(("Financial Reports (ERPNext)", "Workspace", "Accounting"), links)
+        self.assertIn(("Payment Voucher", "Page", "payment-voucher"), links)
+        self.assertIn(("Receipt Voucher", "Page", "receipt-voucher"), links)
 
     def test_payment_mode_property_setter_is_server_synced(self):
         path = Path(__file__).parents[1] / "fixtures" / "property_setter.json"
@@ -94,6 +98,12 @@ class TestNavigation(unittest.TestCase):
             "Financial Reports (ERPNext)",
         ):
             self.assertIn(f'"{label}"', source)
+        self.assertIn('page_route: "payment-voucher"', source)
+        self.assertIn('page_route: "receipt-voucher"', source)
+        self.assertIn('frappe.route_options = {company: company.get_value(), posting_date: date.get_value()}', source)
+        self.assertIn('Direct Expense Payment', source)
+        self.assertIn('Direct Income Receipt', source)
+        self.assertIn('voucher_against,', source)
 
     def test_desktop_app_uses_packaged_custom_icon(self):
         from reckon_accounts import hooks

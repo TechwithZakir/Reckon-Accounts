@@ -17,6 +17,8 @@ class LedgerFilters:
     from_date: date
     to_date: date
     account: str | None = None
+    cost_center: str | None = None
+    project: str | None = None
     party_type: str | None = None
     party: str | None = None
     voucher_type: str | None = None
@@ -35,8 +37,7 @@ class LedgerFilters:
     page_size: int = 100
 
     @property
-    def filtered_balance(self) -> bool:
-        """Voucher filters affect opening, movement and closing, not only rows."""
+    def has_voucher_scope(self) -> bool:
         return any(
             (
                 self.voucher_type,
@@ -44,6 +45,17 @@ class LedgerFilters:
                 self.payment_type,
                 self.mode_of_payment,
                 self.reference_no,
+            )
+        )
+
+    @property
+    def filtered_balance(self) -> bool:
+        """Voucher and accounting-dimension filters affect calculated balances."""
+        return any(
+            (
+                self.has_voucher_scope,
+                self.cost_center,
+                self.project,
             )
         )
 
@@ -62,6 +74,8 @@ class LedgerFilters:
             for key in (
                 "company",
                 "account",
+                "cost_center",
+                "project",
                 "party_type",
                 "party",
                 "voucher_type",
@@ -120,6 +134,8 @@ def parse_ledger_filters(values: Mapping) -> LedgerFilters:
         key: _text(values, key)
         for key in (
             "account",
+            "cost_center",
+            "project",
             "party_type",
             "party",
             "voucher_type",

@@ -23,6 +23,8 @@ reckon_accounts.report_settings = function (report_name) {
             default: frappe.datetime.get_today()},
         link("fiscal_year", "Fiscal Year", "Fiscal Year"),
         link("account", "Ledger Account / Group", "Account"),
+        link("cost_center", "Cost Center", "Cost Center"),
+        link("project", "Project", "Project"),
         {fieldname: "party_type", label: __("Party Type"), fieldtype: "Select", options: [""]},
         {fieldname: "party", label: __("Party"), fieldtype: "Dynamic Link", options: "party_type",
             get_query: () => search("party"), depends_on: "eval:doc.party_type && doc.party_type !== 'Other'"},
@@ -68,7 +70,7 @@ reckon_accounts.report_settings = function (report_name) {
                     if (filter.fieldname === "party_type") await report.set_filter_value("party", "");
                     if (filter.fieldname === "voucher_type") await report.set_filter_value("voucher_no", "");
                     if (filter.fieldname === "company") {
-                        for (const name of ["account", "party", "voucher_no", "finance_book", "fiscal_year"])
+                        for (const name of ["account", "cost_center", "project", "party_type", "party", "voucher_no", "finance_book", "fiscal_year"])
                             await report.set_filter_value(name, "");
                         if (report_name === "Funds Flow") {
                             await report.set_filter_value("current_assets_group", "");

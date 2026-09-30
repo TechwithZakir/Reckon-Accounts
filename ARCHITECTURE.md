@@ -11,7 +11,8 @@ Implemented now:
 
 - `reckon_accounts/hooks.py`: app registration and required ERPNext app.
 - `reckon_accounts/accounting/filters.py`: strict structural parsing of company,
-  explicit dates, account/party/voucher scope, currency, dimensions and pagination.
+  explicit dates, account/Cost Center/Project/Party/voucher scope, currency,
+  dimensions and pagination.
   Rejects unknown options and conflicting filters. Voucher restrictions carry a
   filtered-balance label and remain part of the shared calculation scope.
 - `reckon_accounts/reckon_accounts`: Frappe module and minimal workspace metadata.
@@ -29,8 +30,17 @@ Implemented now:
 - `accounting/service.py`: multi-section running balances, page carry-forward and detail-side totals.
 - `accounting/reporting.py`: report columns, summaries, scope disclosure and full CSV rendering.
 - `api.py`: permission-checked full export, metadata and selection searches.
-- `public/js/report_filters.js`: shared filters, dimension dialog, safe formatting and drill-down.
-- `reckon_accounts/report/`: three thin Script Report entry points and registration metadata.
+- `accounting/voucher_service.py`: direct Payment/Receipt voucher service that
+  validates accounts and creates submitted Journal Entries for non-party Expense
+  and Income vouchers while leaving party settlement to Payment Entry.
+- `public/js/report_filters.js`: shared filters for all 25 custom reports, including
+  Cost Center, Project when supported by the GL schema, Party Type and Party;
+  dimension dialog, safe formatting and drill-down.
+- `public/js/voucher_page.js`: shared Desk UI for Payment Voucher and Receipt Voucher.
+- `reckon_accounts/report/`: 25 thin Script Report entry points and registration metadata.
+
+See [voucher architecture](VOUCHER_ARCHITECTURE.md) for the Payment Voucher and
+Receipt Voucher design, upstream ERPNext source evidence and live validation gates.
 
 The balance functions operate on an already filtered, authorized, single-currency
 scope. They do not decide which records constitute an opening balance. Adapters

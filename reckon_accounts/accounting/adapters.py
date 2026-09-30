@@ -180,16 +180,32 @@ class LedgerAdapter:
             row["fieldname"] for row in definitions if not row.get("disabled")
         }
         selections = {}
+        for fieldname in ("cost_center", "project"):
+            selected = getattr(filters, fieldname)
+            if selected:
+                selections[fieldname] = expand_selection(
+                    self.gateway,
+                    self.permissions,
+                    dimensions[fieldname],
+                    [selected],
+                    filters.company,
+                )
         for fieldname, values in filters.dimensions:
             if fieldname not in dimensions or fieldname not in active:
                 raise ScopeError("Unknown or disabled accounting dimension")
-            selections[fieldname] = expand_selection(
+            expanded = expand_selection(
                 self.gateway,
                 self.permissions,
                 dimensions[fieldname],
                 values,
                 filters.company,
             )
+            if fieldname in selections:
+                # Keep old dimensions URLs valid while making the dedicated
+                # Cost Center and Project filters the primary UI controls.
+                selections[fieldname] &= expanded
+            else:
+                selections[fieldname] = expanded
 
         conditions = [["company", "=", filters.company], ["is_cancelled", "=", 0]]
         if voucher_keys is not None:

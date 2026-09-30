@@ -141,6 +141,15 @@ class TestAdapters(unittest.TestCase):
         with self.assertRaises(ScopeError):
             self.run_report(dimensions={"disabled_field": ["x"]})
 
+    def test_dedicated_cost_center_and_project_filters_scope_gl(self):
+        self.gateway.records["GL Entry"] = [
+            gl(cost_center="Child CC", project="Project A"),
+            gl("other", debit=25, cost_center=None, project=None),
+        ]
+        self.assertEqual(self.run_report(cost_center="Main CC").sections[0].closing, 100)
+        self.assertEqual(self.run_report(project="Project A").sections[0].closing, 100)
+        self.assertEqual(self.run_report(cost_center="Main CC", project="Project A").sections[0].closing, 100)
+
     def test_dimension_denial_and_company_mismatch(self):
         self.gateway.records["GL Entry"][0]["project"] = "Project A"
         self.gateway.denied_docs.add(("Project", "Project A"))

@@ -9,6 +9,12 @@ from reckon_accounts.accounting.adapters import LedgerAdapter, authorize_report,
 from reckon_accounts.accounting.dimensions import dimension_contract
 from reckon_accounts.accounting.permissions import PermissionScope
 from reckon_accounts.accounting.reporting import export_csv
+from reckon_accounts.accounting.voucher_service import (
+    create_direct_expense,
+    create_direct_income,
+    get_accounting_dimensions,
+    get_default_payment_account,
+)
 
 
 def check_app_permission():
@@ -30,6 +36,8 @@ def normalize_report_filters(values):
     result = dict(values)
     links = {
         "account",
+        "cost_center",
+        "project",
         "party_type",
         "party",
         "voucher_type",
@@ -133,6 +141,7 @@ def filter_options(report_name):
     dimensions = [
         {"fieldname": key, "doctype": value, "label": gateway.meta("GL Entry").get_field(key).label}
         for key, value in _metadata(gateway).items()
+        if key not in {"cost_center", "project"}
         if gateway.can_read_type(value)
     ]
     return {"party_types": sorted(types) + ["Other"], "dimensions": dimensions}
@@ -155,6 +164,8 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
         "account": "Account",
         "fiscal_year": "Fiscal Year",
         "finance_book": "Finance Book",
+        "cost_center": "Cost Center",
+        "project": "Project",
         "voucher_type": "DocType",
         "mode_of_payment": "Mode of Payment",
     } | _metadata(gateway)
@@ -202,3 +213,27 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
         [record["name"], record.get(title) or record["name"]]
         for record in permitted[int(start) : int(start) + int(page_len)]
     ]
+
+
+@frappe.whitelist()
+def direct_payment_voucher(values):
+    """Create a direct-expense Payment Voucher backed by Journal Entry."""
+    return create_direct_expense(values)
+
+
+@frappe.whitelist()
+def direct_receipt_voucher(values):
+    """Create a direct-income Receipt Voucher backed by Journal Entry."""
+    return create_direct_income(values)
+
+
+@frappe.whitelist()
+def default_payment_account(company, mode_of_payment):
+    """Return the Mode of Payment account for the selected company."""
+    return get_default_payment_account(company, mode_of_payment)
+
+
+@frappe.whitelist()
+def voucher_accounting_dimensions():
+    """Return enabled accounting dimensions for voucher pages."""
+    return get_accounting_dimensions()

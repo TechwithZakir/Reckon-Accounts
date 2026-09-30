@@ -1,0 +1,15 @@
+{
+ "doctype": "Page",
+ "name": "receipt-voucher",
+ "page_name": "receipt-voucher",
+ "title": "Receipt Voucher",
+ "module": "Reckon Accounts",
+ "standard": "Yes",
+ "roles": [
+  {"role": "Accounts User"},
+  {"role": "Accounts Manager"},
+  {"role": "Reckon Accounts User"},
+  {"role": "Reckon Accounts Manager"},
+  {"role": "System Manager"}
+ ]
+}

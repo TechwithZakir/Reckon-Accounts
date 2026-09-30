@@ -4,6 +4,7 @@ import json
 
 GROUPS = (
     ("Voucher Entry", "Page", ("voucher-entry",)),
+    ("Transactions", "Page", ("payment-voucher", "receipt-voucher")),
     (
         "Ledgers",
         "Report",
@@ -71,7 +72,7 @@ GROUPS = (
     ),
     ("ERPNext", "Workspace", ("Accounting",)),
     (
-        "Transactions",
+        "ERPNext Transactions",
         "DocType",
         (
             "Journal Entry",
@@ -215,5 +216,7 @@ def sidebar_document():
 def _label(name):
     return {
         "voucher-entry": "Voucher Entry",
+        "payment-voucher": "Payment Voucher",
+        "receipt-voucher": "Receipt Voucher",
         "Accounting": "Financial Reports (ERPNext)",
     }.get(name, name)

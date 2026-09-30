@@ -1,0 +1,15 @@
+{
+ "doctype": "Page",
+ "name": "payment-voucher",
+ "page_name": "payment-voucher",
+ "title": "Payment Voucher",
+ "module": "Reckon Accounts",
+ "standard": "Yes",
+ "roles": [
+  {"role": "Accounts User"},
+  {"role": "Accounts Manager"},
+  {"role": "Reckon Accounts User"},
+  {"role": "Reckon Accounts Manager"},
+  {"role": "System Manager"}
+ ]
+}

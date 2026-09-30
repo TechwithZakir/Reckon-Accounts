@@ -6,32 +6,63 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
     const date = page.add_field({fieldname: "posting_date", label: __("Posting Date"),
         fieldtype: "Date", reqd: 1, default: frappe.datetime.get_today()});
     const entries = [
-        ["F4", "Contra", "Payment Entry", {payment_type: "Internal Transfer"}],
-        ["F5", "Payment", "Payment Entry", {payment_type: "Pay"}],
-        ["F6", "Receipt", "Payment Entry", {payment_type: "Receive"}],
-        ["F7", "Journal", "Journal Entry", {voucher_type: "Journal Entry"}],
-        ["F8", "Sales", "Sales Invoice", {}],
-        ["F9", "Purchase", "Purchase Invoice", {}],
+        {key: "F4", label: "Contra", doctype: "Payment Entry", defaults: {payment_type: "Internal Transfer"}},
+        {key: "F5", label: "Payment", doctype: "Payment Entry", defaults: {payment_type: "Pay"}, page_route: "payment-voucher"},
+        {key: "F6", label: "Receipt", doctype: "Payment Entry", defaults: {payment_type: "Receive"}, page_route: "receipt-voucher"},
+        {key: "F7", label: "Journal", doctype: "Journal Entry", defaults: {voucher_type: "Journal Entry"}},
+        {key: "F8", label: "Sales", doctype: "Sales Invoice", defaults: {}},
+        {key: "F9", label: "Purchase", doctype: "Purchase Invoice", defaults: {}},
     ];
     const body = $("<div class='p-4'></div>").appendTo(page.main);
     $("<p class='text-muted'></p>").text(__("Choose a voucher to open a new entry. Review, save and submit in the entry form.")).appendTo(body);
     const grid = $("<div></div>").css({display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px"}).appendTo(body);
     const actions = {};
-    for (const [key, label, doctype, defaults] of entries) {
+    for (const entry of entries) {
+        const {key, label, doctype, defaults, page_route} = entry;
+        const can_create = page_route
+            ? (frappe.model.can_create("Journal Entry") || frappe.model.can_create("Payment Entry"))
+            : frappe.model.can_create(doctype);
         const open = () => {
-            if (!frappe.model.can_create(doctype)) return frappe.msgprint(__("You do not have permission to create this voucher."));
+            if (!can_create) return frappe.msgprint(__("You do not have permission to create this voucher."));
             if (!company.get_value() || !date.get_value()) return frappe.msgprint(__("Select Company and Posting Date."));
+            if (page_route) {
+                frappe.route_options = {company: company.get_value(), posting_date: date.get_value()};
+                return frappe.set_route(page_route);
+            }
             frappe.new_doc(doctype, {...defaults, company: company.get_value(), posting_date: date.get_value()});
         };
         actions[key] = open;
         $("<button type='button' class='btn btn-default p-4 text-left'></button>")
-            .text(key + " · " + __(label)).prop("disabled", !frappe.model.can_create(doctype))
+            .text(key + " · " + __(label)).prop("disabled", !can_create)
             .on("click", open).appendTo(grid);
+    }
+
+    $("<h4 class='mt-4 mb-3'></h4>").text(__("Custom Payment / Receipt Vouchers")).appendTo(body);
+    const customGrid = $("<div></div>").css({display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px"}).appendTo(body);
+    const custom_vouchers = [
+        ["Direct Expense Payment", "payment-voucher", "Direct Expense"],
+        ["Direct Income Receipt", "receipt-voucher", "Direct Income"],
+    ];
+    for (const [label, route, voucher_against] of custom_vouchers) {
+        const can_create = frappe.model.can_create("Journal Entry") || frappe.model.can_create("Payment Entry");
+        $("<button type='button' class='btn btn-primary p-3 text-left'></button>")
+            .text(__(label)).prop("disabled", !can_create)
+            .on("click", () => {
+                if (!can_create) return frappe.msgprint(__("You do not have permission to create this voucher."));
+                if (!company.get_value() || !date.get_value()) return frappe.msgprint(__("Select Company and Posting Date."));
+                frappe.route_options = {
+                    company: company.get_value(),
+                    posting_date: date.get_value(),
+                    voucher_against,
+                };
+                frappe.set_route(route);
+            }).appendTo(customGrid);
     }
 
     const list_grid = $("<div class='mt-2'></div>").css({display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px"}).appendTo(body);
-    for (const [, label, doctype, defaults] of entries) {
+    for (const {label, doctype, defaults} of entries) {
         const open_list = () => {
             if (!frappe.model.can_read(doctype)) {
                 return frappe.msgprint(__("You do not have permission to view these vouchers."));

@@ -1,0 +1,10 @@
+{
+ "doctype": "Print Format",
+ "name": "Receipt Voucher",
+ "doc_type": "Journal Entry",
+ "module": "Reckon Accounts",
+ "standard": "Yes",
+ "print_format_type": "Jinja",
+ "disabled": 0,
+ "html": "<div class=\"print-format\">\n  <h2>Receipt Voucher</h2>\n  <h4>{{ doc.company }}</h4>\n  <table class=\"table table-condensed\">\n    <tr><td><b>Voucher Number</b></td><td>{{ doc.name }}</td><td><b>Posting Date</b></td><td>{{ frappe.utils.formatdate(doc.posting_date) }}</td></tr>\n    <tr><td><b>Mode of Payment</b></td><td>{{ doc.mode_of_payment or '' }}</td><td><b>Reference</b></td><td>{{ doc.cheque_no or '' }}{% if doc.cheque_date %} / {{ frappe.utils.formatdate(doc.cheque_date) }}{% endif %}</td></tr>\n    <tr><td><b>Received From / Source</b></td><td colspan=\"3\">{{ doc.pay_to_recd_from or '' }}</td></tr>\n  </table>\n  <table class=\"table table-bordered\">\n    <thead><tr><th>Account</th><th class=\"text-right\">Debit</th><th class=\"text-right\">Credit</th></tr></thead>\n    <tbody>{% for row in doc.accounts %}<tr><td>{{ row.account }}{% if row.cost_center %}<br><small>Cost Center: {{ row.cost_center }}</small>{% endif %}{% if row.project %}<br><small>Project: {{ row.project }}</small>{% endif %}</td><td class=\"text-right\">{{ frappe.format(row.debit_in_account_currency, {'fieldtype': 'Currency'}, doc) }}</td><td class=\"text-right\">{{ frappe.format(row.credit_in_account_currency, {'fieldtype': 'Currency'}, doc) }}</td></tr>{% endfor %}</tbody>\n  </table>\n  <p><b>Amount in Words:</b> {{ doc.total_amount_in_words or '' }}</p>\n  <p><b>Narration:</b><br>{{ doc.user_remark or doc.remark or '' }}</p>\n  <div style=\"display:flex; gap: 60px; margin-top: 60px;\"><div>Prepared By<br><br>__________________</div><div>Approved By<br><br>__________________</div><div>Received By<br><br>__________________</div></div>\n</div>"
+}

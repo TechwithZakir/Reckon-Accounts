@@ -92,6 +92,8 @@ def setup_roles_and_permissions():
     for report in frappe.get_all("Report", filters={"module": "Reckon Accounts"}, pluck="name"):
         _ensure_role_links("Report", report)
     _ensure_role_links("Page", "voucher-entry")
+    _ensure_role_links("Page", "payment-voucher")
+    _ensure_role_links("Page", "receipt-voucher")
     _ensure_role_links("Workspace", "Reckon Accounts")
     _ensure_role_links("Workspace", "Accounting")
 

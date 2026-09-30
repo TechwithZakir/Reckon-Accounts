@@ -88,5 +88,7 @@ class TestAPI(unittest.TestCase):
     def test_metadata_contains_only_available_party_types(self):
         result = self.api.filter_options("General Ledger Custom")
         self.assertEqual(result["party_types"], ["Customer", "Other"])
+        self.assertNotIn("cost_center", {item["fieldname"] for item in result["dimensions"]})
+        self.assertNotIn("project", {item["fieldname"] for item in result["dimensions"]})
         self.gateway.denied_types.add("Customer")
         self.assertEqual(self.api.filter_options("General Ledger Custom")["party_types"], ["Other"])
