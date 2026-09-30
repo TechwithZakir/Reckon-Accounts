@@ -81,6 +81,7 @@
             "depends_on",
             direct_mode ? direct_visibility : "eval:(doc.paid_to && doc.paid_from)",
         );
+        apply_dimension_visibility(frm, direct_mode, direct_visibility);
         const party_fields = [
             "party_section", "party_type", "party", "party_name", "bank_account",
             "party_bank_account", "contact_person", "contact_email",
@@ -113,6 +114,21 @@
         frm.set_df_property("paid_to", "label", is_expense ? __("Expense Account") : __("Received To (Cash / Bank)"));
         frm.set_df_property("paid_amount", "label", is_expense ? __("Paid Amount") : __("Received Amount"));
         frm.set_df_property("received_amount", "label", is_expense ? __("Expense Amount") : __("Received Amount"));
+    }
+
+    function apply_dimension_visibility(frm, direct_mode, direct_visibility) {
+        const dimension_fields = ["accounting_dimensions_section", "cost_center", "project"];
+        for (const fieldname of dimension_fields) {
+            frm.set_df_property(fieldname, "depends_on", direct_mode ? direct_visibility : null);
+            frm.toggle_display(fieldname, true);
+        }
+
+        if (!direct_mode) return;
+        const section = frm.layout?.sections_dict?.accounting_dimensions_section;
+        if (section?.collapse) {
+            section.expanded_by_user = true;
+            section.collapse(false);
+        }
     }
 
     function set_account_queries(frm) {
