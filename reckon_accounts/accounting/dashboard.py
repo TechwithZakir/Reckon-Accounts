@@ -1,7 +1,7 @@
 """Permission-aware dashboard summaries built from the authorized ledger scope."""
 
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
 from reckon_accounts.accounting.adapters import LedgerAdapter
@@ -9,7 +9,45 @@ from reckon_accounts.accounting.adapters import LedgerAdapter
 
 def build_dashboard(gateway, filters):
     """Return the Accounts Dashboard payload without bypassing report permissions."""
-    result = LedgerAdapter(gateway).run("General Ledger Custom", filters, full=True)
+    adapter = LedgerAdapter(gateway)
+    result = adapter.run("General Ledger Custom", filters, full=True)
+    current = _summarize(result, gateway)
+
+    previous_filters = _previous_period_filters(filters)
+    previous_result = adapter.run("General Ledger Custom", previous_filters, full=True)
+    previous = _summarize(previous_result, gateway)
+
+    return {
+        "currency": result.currency,
+        "period": {
+            "from_date": result.filters.from_date.isoformat(),
+            "to_date": result.filters.to_date.isoformat(),
+        },
+        "previous_period": {
+            "from_date": previous_result.filters.from_date.isoformat(),
+            "to_date": previous_result.filters.to_date.isoformat(),
+        },
+        "kpis": current["kpis"],
+        "comparison": {
+            key: _percent_change(current["kpis"][key], previous["kpis"][key])
+            for key in current["kpis"]
+        },
+        "trend": current["trend"],
+        "cash_flow": current["cash_flow"],
+        "receivables": current["receivables"][:5],
+        "payables": current["payables"][:5],
+        "receivables_aging": _aging_summary(current["receivables"]),
+        "payables_aging": _aging_summary(current["payables"]),
+        "cash_balances": current["cash_balances"][:5],
+        "account_balance_summary": current["account_balance_summary"],
+        "top_income": current["top_income"],
+        "top_expense": current["top_expense"],
+        "recent": current["recent"],
+        "transaction_count": current["transaction_count"],
+    }
+
+
+def _summarize(result, gateway):
     account_details = _account_details(gateway, result.sections)
     postings = [movement.posting for section in result.sections for movement in section.movements]
     months = _months(result.filters.from_date, result.filters.to_date)
@@ -56,6 +94,7 @@ def build_dashboard(gateway, filters):
                 "particulars": posting.particulars,
                 "debit": Decimal(0),
                 "credit": Decimal(0),
+                "status": "Posted",
             },
         )
         transaction["debit"] += posting.debit
@@ -67,18 +106,13 @@ def build_dashboard(gateway, filters):
     cash_balances = _account_balances(result.sections, account_details, {"Bank", "Cash"})
 
     return {
-        "currency": result.currency,
-        "period": {
-            "from_date": result.filters.from_date.isoformat(),
-            "to_date": result.filters.to_date.isoformat(),
-        },
         "kpis": {
             "income": _number(income),
             "expenses": _number(expenses),
             "profit": _number(income - expenses),
-            "receivables": _number(sum(item["balance"] for item in receivables)),
-            "payables": _number(sum(item["balance"] for item in payables)),
-            "cash": _number(sum(item["balance"] for item in cash_balances)),
+            "receivables": _number(sum(Decimal(str(item["balance"])) for item in receivables)),
+            "payables": _number(sum(Decimal(str(item["balance"])) for item in payables)),
+            "cash": _number(sum(Decimal(str(item["balance"])) for item in cash_balances)),
         },
         "trend": [
             {
@@ -86,6 +120,7 @@ def build_dashboard(gateway, filters):
                 "label": _month_label(month),
                 "income": _number(income_by_month[month]),
                 "expenses": _number(expenses_by_month[month]),
+                "profit": _number(income_by_month[month] - expenses_by_month[month]),
             }
             for month in months
         ],
@@ -99,9 +134,10 @@ def build_dashboard(gateway, filters):
             }
             for month in months
         ],
-        "receivables": receivables[:5],
-        "payables": payables[:5],
-        "cash_balances": cash_balances[:5],
+        "receivables": receivables,
+        "payables": payables,
+        "cash_balances": cash_balances,
+        "account_balance_summary": _account_balance_summary(result.sections, account_details),
         "top_income": _top_accounts(income_accounts),
         "top_expense": _top_accounts(expense_accounts),
         "recent": [
@@ -112,6 +148,21 @@ def build_dashboard(gateway, filters):
             }
             for item in sorted(transactions.values(), key=lambda item: item["date"], reverse=True)[:8]
         ],
+        "transaction_count": len(transactions),
+    }
+
+
+def _previous_period_filters(filters):
+    start = _as_date(filters["from_date"])
+    end = _as_date(filters["to_date"])
+    span = (end - start).days + 1
+    previous_end = start - timedelta(days=1)
+    previous_start = previous_end - timedelta(days=span - 1)
+    return {
+        **filters,
+        "from_date": previous_start.isoformat(),
+        "to_date": previous_end.isoformat(),
+        "page": 1,
     }
 
 
@@ -165,6 +216,52 @@ def _account_balances(sections, account_details, account_types):
     )
 
 
+def _account_balance_summary(sections, account_details):
+    values = defaultdict(lambda: {"accounts": set(), "balance": Decimal(0)})
+    for section in sections:
+        root_type = section.account_root_type or account_details.get(section.account, {}).get(
+            "root_type", "Other"
+        ) or "Other"
+        values[root_type]["accounts"].add(section.account)
+        values[root_type]["balance"] += abs(section.closing)
+    order = ("Asset", "Liability", "Equity", "Income", "Expense", "Other")
+    return [
+        {
+            "type": root_type,
+            "accounts": len(values[root_type]["accounts"]),
+            "balance": _number(values[root_type]["balance"]),
+        }
+        for root_type in order
+        if root_type in values
+    ]
+
+
+def _aging_summary(rows):
+    buckets = [
+        ("0 - 30 Days", 0, 30),
+        ("31 - 60 Days", 31, 60),
+        ("61 - 90 Days", 61, 90),
+        ("> 90 Days", 91, None),
+    ]
+    values = [{"label": label, "amount": Decimal(0), "count": 0} for label, _, _ in buckets]
+    for row in rows:
+        for index, (_, low, high) in enumerate(buckets):
+            if row["days"] >= low and (high is None or row["days"] <= high):
+                values[index]["amount"] += Decimal(str(row["balance"]))
+                values[index]["count"] += 1
+                break
+    total = sum(item["amount"] for item in values)
+    return [
+        {
+            "label": item["label"],
+            "amount": _number(item["amount"]),
+            "count": item["count"],
+            "percentage": _number(item["amount"] / total * 100) if total else 0.0,
+        }
+        for item in values
+    ]
+
+
 def _top_accounts(values):
     return [
         {"name": name, "amount": _number(amount)}
@@ -178,12 +275,27 @@ def _cash_flow_category(root_type):
     )
 
 
+def _percent_change(current, previous):
+    current = Decimal(str(current))
+    previous = Decimal(str(previous))
+    if not previous:
+        return 0.0 if not current else None
+    return _number((current - previous) / abs(previous) * 100)
+
+
+def _as_date(value):
+    return value if isinstance(value, date) else date.fromisoformat(str(value))
+
+
 def _months(start, end):
     current = start.replace(day=1)
     values = []
     while current <= end:
         values.append(current.strftime("%Y-%m"))
-        current = current.replace(year=current.year + (current.month == 12), month=1 if current.month == 12 else current.month + 1)
+        current = current.replace(
+            year=current.year + (current.month == 12),
+            month=1 if current.month == 12 else current.month + 1,
+        )
     return values
 
 

@@ -59,6 +59,11 @@ class TestAPI(unittest.TestCase):
         result = self.api.dashboard_data("Co", "2026-01-01", "2026-01-31")
         self.assertEqual(result["period"], {"from_date": "2026-01-01", "to_date": "2026-01-31"})
         self.assertIn("income", result["kpis"])
+        self.assertEqual(set(result["comparison"]), set(result["kpis"]))
+        self.assertIn("profit", result["trend"][0])
+        self.assertEqual(len(result["receivables_aging"]), 4)
+        self.assertIn("account_balance_summary", result)
+        self.assertIn("transaction_count", result)
         json.dumps(result)
 
     def test_selection_search_obeys_document_permission(self):
