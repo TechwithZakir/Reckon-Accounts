@@ -26,6 +26,7 @@ test("payment labels and required mode follow payment type", () => {
     const properties = {};
     const dimensions = {};
     const accounts = {};
+    const taxes = {};
     const collapsed = [];
     const accountingDimensionsSection = {
         collapse: value => collapsed.push(value),
@@ -34,7 +35,8 @@ test("payment labels and required mode follow payment type", () => {
         doc: {payment_type: "Receive"},
         layout: {sections_dict: {accounting_dimensions_section: accountingDimensionsSection}},
         fields_dict: {accounting_dimensions_section: {wrapper: dimensions},
-            payment_accounts_section: {wrapper: accounts}},
+            payment_accounts_section: {wrapper: accounts},
+            taxes_and_charges_section: {wrapper: taxes}},
         set_df_property: (field, property, value) => {properties[field + "." + property] = value;},
         toggle_display: () => {},
         set_query: () => {},
@@ -49,6 +51,7 @@ test("payment labels and required mode follow payment type", () => {
     assert.equal(accountingDimensionsSection.expanded_by_user, true);
     assert.deepEqual(collapsed, [false]);
     assert.equal(dimensions.before, accounts);
+    assert.equal(dimensions.after, taxes);
     frm.doc.payment_type = "Pay";
     events.payment_type(frm);
     assert.equal(properties["party_section.label"], "Party Details");

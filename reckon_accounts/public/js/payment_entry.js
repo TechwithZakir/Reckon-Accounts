@@ -28,9 +28,14 @@
     function arrange_sections(frm) {
         const dimensions = frm.fields_dict.accounting_dimensions_section?.wrapper;
         const accounts = frm.fields_dict.payment_accounts_section?.wrapper;
+        const taxes = frm.fields_dict.taxes_and_charges_section?.wrapper;
         if (dimensions && accounts && !$(accounts).data("reckon-moved")) {
             $(dimensions).before(accounts);
             $(accounts).data("reckon-moved", true);
+        }
+        if (dimensions && taxes && !$(taxes).data("reckon-moved")) {
+            $(dimensions).after(taxes);
+            $(taxes).data("reckon-moved", true);
         }
     }
 
