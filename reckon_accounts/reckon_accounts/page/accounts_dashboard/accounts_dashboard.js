@@ -85,7 +85,8 @@ frappe.pages["accounts-dashboard"].on_page_load = function (wrapper) {
             render(data);
         } catch (error) {
             console.error("Accounts Dashboard failed", error);
-            renderEmpty(error.message || "Dashboard data is unavailable.");
+            const message = error && (error.message || error.exception);
+            renderEmpty(message || __("Dashboard data is unavailable."));
         }
     }
 
