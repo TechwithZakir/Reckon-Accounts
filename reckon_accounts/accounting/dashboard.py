@@ -40,6 +40,7 @@ def build_dashboard(gateway, filters):
         "payables_aging": _aging_summary(current["payables"]),
         "cash_balances": current["cash_balances"][:5],
         "account_balance_summary": current["account_balance_summary"],
+        "account_heads": current["account_heads"],
         "top_income": current["top_income"],
         "top_expense": current["top_expense"],
         "recent": current["recent"],
@@ -57,8 +58,8 @@ def _summarize(result, gateway):
     income_by_month = defaultdict(Decimal)
     expenses_by_month = defaultdict(Decimal)
     cash_flow = defaultdict(lambda: defaultdict(Decimal))
-    income_accounts = defaultdict(Decimal)
-    expense_accounts = defaultdict(Decimal)
+    income_accounts = {}
+    expense_accounts = {}
     transactions = {}
 
     for posting in postings:
@@ -72,13 +73,13 @@ def _summarize(result, gateway):
             if amount > 0:
                 income += amount
                 income_by_month[month] += amount
-                income_accounts[posting.account_name or posting.account] += amount
+                _add_account_amount(income_accounts, posting.account, posting.account_name, amount)
         elif root_type == "Expense":
             amount = posting.debit - posting.credit
             if amount > 0:
                 expenses += amount
                 expenses_by_month[month] += amount
-                expense_accounts[posting.account_name or posting.account] += amount
+                _add_account_amount(expense_accounts, posting.account, posting.account_name, amount)
 
         if account_type in {"Bank", "Cash"}:
             category = _cash_flow_category(root_type)
@@ -138,6 +139,7 @@ def _summarize(result, gateway):
         "payables": payables,
         "cash_balances": cash_balances,
         "account_balance_summary": _account_balance_summary(result.sections, account_details),
+        "account_heads": _account_heads(result.sections, account_details),
         "top_income": _top_accounts(income_accounts),
         "top_expense": _top_accounts(expense_accounts),
         "recent": [
@@ -206,11 +208,17 @@ def _party_balances(sections, account_details, account_type, as_of):
 
 def _account_balances(sections, account_details, account_types):
     balances = defaultdict(Decimal)
+    names = {}
     for section in sections:
         if account_details.get(section.account, {}).get("account_type") in account_types:
-            balances[section.account_name or section.account] += abs(section.closing)
+            balances[section.account] += abs(section.closing)
+            names[section.account] = section.account_name or section.account
     return sorted(
-        [{"name": name, "balance": _number(balance)} for name, balance in balances.items() if balance],
+        [
+            {"account": account, "name": names[account], "balance": _number(balance)}
+            for account, balance in balances.items()
+            if balance
+        ],
         key=lambda item: item["balance"],
         reverse=True,
     )
@@ -234,6 +242,33 @@ def _account_balance_summary(sections, account_details):
         for root_type in order
         if root_type in values
     ]
+
+
+def _account_heads(sections, account_details):
+    values = {}
+    for section in sections:
+        account = section.account
+        item = values.setdefault(
+            account,
+            {
+                "account": account,
+                "name": section.account_name or account,
+                "root_type": section.account_root_type
+                or account_details.get(account, {}).get("root_type", "Other")
+                or "Other",
+                "balance": Decimal(0),
+            },
+        )
+        item["balance"] += abs(section.closing)
+    return sorted(
+        [
+            {**item, "balance": _number(item["balance"])}
+            for item in values.values()
+            if item["balance"]
+        ],
+        key=lambda item: item["balance"],
+        reverse=True,
+    )
 
 
 def _aging_summary(rows):
@@ -262,10 +297,15 @@ def _aging_summary(rows):
     ]
 
 
+def _add_account_amount(values, account, name, amount):
+    item = values.setdefault(account, {"account": account, "name": name or account, "amount": Decimal(0)})
+    item["amount"] += amount
+
+
 def _top_accounts(values):
     return [
-        {"name": name, "amount": _number(amount)}
-        for name, amount in sorted(values.items(), key=lambda item: item[1], reverse=True)[:5]
+        {**item, "amount": _number(item["amount"])}
+        for item in sorted(values.values(), key=lambda item: item["amount"], reverse=True)[:5]
     ]
 
 

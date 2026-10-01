@@ -63,6 +63,9 @@ class TestAPI(unittest.TestCase):
         self.assertIn("profit", result["trend"][0])
         self.assertEqual(len(result["receivables_aging"]), 4)
         self.assertIn("account_balance_summary", result)
+        self.assertEqual(result["account_heads"][0]["account"], "AR")
+        if result["cash_balances"]:
+            self.assertIn("account", result["cash_balances"][0])
         self.assertIn("transaction_count", result)
         json.dumps(result)
 

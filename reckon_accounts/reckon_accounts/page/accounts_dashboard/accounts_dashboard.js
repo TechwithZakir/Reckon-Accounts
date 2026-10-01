@@ -18,6 +18,16 @@ frappe.pages["accounts-dashboard"].on_page_load = function (wrapper) {
     const percent = (value, max) => `${max ? Math.max(0, Math.min(100, Math.abs(value) / max * 100)) : 0}%`;
     const renderLoading = () => body.html("<div class='reckon-dashboard-empty'><span class='spinner'></span>Loading analytics...</div>");
     const renderEmpty = message => body.html(`<div class='reckon-dashboard-empty'><strong>Dashboard unavailable</strong><span>${escape(message)}</span></div>`);
+    const accountLink = (account, name) => `<button class='reckon-drilldown' data-account='${escape(account)}' title='Open detailed ledger'>${escape(name)}</button>`;
+    const amountLink = (account, value, currency) => `<button class='reckon-drilldown reckon-money-link' data-account='${escape(account)}' title='Open detailed ledger'>${escape(money(value, currency))}</button>`;
+
+    function openLedger(account) {
+        if (!account) return;
+        frappe.set_route("query-report", "General Ledger Custom", {
+            company: company.get_value(), from_date: from_date.get_value(),
+            to_date: to_date.get_value(), account, page: 1,
+        });
+    }
 
     function kpi(title, key, icon, tone, data, currency) {
         const change = data.comparison && data.comparison[key];
@@ -80,20 +90,20 @@ frappe.pages["accounts-dashboard"].on_page_load = function (wrapper) {
     function balances(rows, currency) {
         const total = rows.reduce((sum, row) => sum + Number(row.balance || 0), 0);
         return `<section class='reckon-panel'><header><h2>Bank &amp; Cash Balance</h2><button class='btn btn-link btn-xs' data-route='query-report|Bank Summary'>View All</button></header>` +
-            `<div class='reckon-balance-list'>${rows.length ? rows.map(row => `<div><span>${escape(row.name)}</span><b>${escape(money(row.balance, currency))}</b></div>`).join("") : `<p class='text-muted'>No bank or cash balance.</p>`}</div>` +
+            `<div class='reckon-balance-list'>${rows.length ? rows.map(row => `<div><span>${accountLink(row.account, row.name)}</span>${amountLink(row.account, row.balance, currency)}</div>`).join("") : `<p class='text-muted'>No bank or cash balance.</p>`}</div>` +
             `<div class='reckon-total-row'><span>Total Balance</span><strong>${escape(money(total, currency))}</strong></div></section>`;
     }
 
     function ranking(title, rows, currency, tone) {
         const max = Math.max(1, ...rows.map(row => Number(row.amount || 0)));
         return `<section class='reckon-panel'><header><h2>${escape(title)}</h2><button class='btn btn-link btn-xs' data-route='query-report|General Ledger Custom'>View All</button></header>` +
-            `<div class='reckon-ranking-list'>${rows.length ? rows.map(row => `<div><span title='${escape(row.name)}'>${escape(row.name)}</span><b>${escape(money(row.amount, currency))}</b><i class='${tone}'><em style='width:${percent(row.amount, max)}'></em></i></div>`).join("") : `<p class='text-muted'>No accounts found.</p>`}</div></section>`;
+            `<div class='reckon-ranking-list'>${rows.length ? rows.map(row => `<div><span title='${escape(row.name)}'>${accountLink(row.account, row.name)}</span>${amountLink(row.account, row.amount, currency)}<i class='${tone}'><em style='width:${percent(row.amount, max)}'></em></i></div>`).join("") : `<p class='text-muted'>No accounts found.</p>`}</div></section>`;
     }
 
     function accountSummary(rows, currency) {
-        return `<section class='reckon-panel'><header><h2>Account Balance Summary</h2><button class='btn btn-link btn-xs' data-route='doctype|Account'>View All</button></header>` +
-            `<div class='reckon-table-wrap'><table><thead><tr><th>Account Type</th><th>Accounts</th><th>Balance</th></tr></thead><tbody>` +
-            (rows.length ? rows.map(row => `<tr><td><span class='reckon-type-dot ${escape(row.type.toLowerCase())}'></span>${escape(row.type)}</td><td>${escape(row.accounts)}</td><td>${escape(money(row.balance, currency))}</td></tr>`).join("") : `<tr><td colspan='3' class='text-muted'>No account balances.</td></tr>`) +
+        return `<section class='reckon-panel'><header><h2>Account Heads</h2><button class='btn btn-link btn-xs' data-route='doctype|Account'>View All</button></header>` +
+            `<div class='reckon-account-heads'><table><thead><tr><th>Account Head</th><th>Type</th><th>Balance</th></tr></thead><tbody>` +
+            (rows.length ? rows.map(row => `<tr><td>${accountLink(row.account, row.name)}</td><td><span class='reckon-type-dot ${escape(row.root_type.toLowerCase())}'></span>${escape(row.root_type)}</td><td>${amountLink(row.account, row.balance, currency)}</td></tr>`).join("") : `<tr><td colspan='3' class='text-muted'>No account balances.</td></tr>`) +
             `</tbody></table></div></section>`;
     }
 
@@ -118,7 +128,7 @@ frappe.pages["accounts-dashboard"].on_page_load = function (wrapper) {
             `<section class='reckon-kpi-grid'>${kpi("Total Income", "income", "IN", "blue", data, currency)}${kpi("Total Expenses", "expenses", "EX", "red", data, currency)}${kpi("Net Profit", "profit", "NP", "gold", data, currency)}${kpi("Outstanding Receivables", "receivables", "AR", "orange", data, currency)}${kpi("Outstanding Payables", "payables", "AP", "purple", data, currency)}${kpi("Cash in Hand", "cash", "CB", "green", data, currency)}</section>` +
             `<section class='reckon-chart-grid'>${barChart(data.trend, currency)}${profitTrend(data.trend, currency)}${cashFlow(data.cash_flow, currency)}</section>` +
             `<section class='reckon-panel-grid'>${aging("Receivables Aging", data.receivables_aging, currency, "receivable")}${aging("Payables Aging", data.payables_aging, currency, "payable")}${balances(data.cash_balances, currency)}</section>` +
-            `<section class='reckon-panel-grid'>${ranking("Top Income Accounts", data.top_income, currency, "income-fill")}${ranking("Top Expense Accounts", data.top_expense, currency, "expense-fill")}${accountSummary(data.account_balance_summary, currency)}</section>` +
+            `<section class='reckon-panel-grid'>${ranking("Top Income Accounts", data.top_income, currency, "income-fill")}${ranking("Top Expense Accounts", data.top_expense, currency, "expense-fill")}${accountSummary(data.account_heads, currency)}</section>` +
             `<section class='reckon-panel-grid reckon-action-grid'>${quickActions()}<div class='reckon-analytics-note'><strong>Analytics scope</strong><span>All summaries respect the selected company, date range, accounting dimensions, and report permissions.</span></div></section>` +
             recent(data.recent, currency, data.transaction_count));
     }
@@ -140,7 +150,10 @@ frappe.pages["accounts-dashboard"].on_page_load = function (wrapper) {
         }
     }
 
-    body.on("click.reckonDashboard", "[data-route]", function () {
+    body.on("click.reckonDashboard", "[data-account]", function (event) {
+        event.preventDefault();
+        openLedger($(this).data("account"));
+    }).on("click.reckonDashboard", "[data-route]", function () {
         const [route, value] = $(this).data("route").split("|");
         frappe.set_route(route, value);
     }).on("click.reckonDashboard", "[data-action]", function () {
