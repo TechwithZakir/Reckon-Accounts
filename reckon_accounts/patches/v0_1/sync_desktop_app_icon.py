@@ -1,4 +1,4 @@
-"""Keep the Frappe 16 workspace desktop icon and its custom image in sync."""
+"""Keep the Reckon Accounts app icon and its dashboard landing route in sync."""
 
 import frappe
 
@@ -13,18 +13,19 @@ def execute():
     meta = frappe.get_meta("Desktop Icon")
     fields = {field.fieldname for field in meta.fields}
     values = {
-        "icon_type": "Link",
-        "link_type": "Workspace Sidebar",
-        "link_to": LABEL,
-        "link": None,
+        "icon_type": "App",
+        "link_type": "External",
+        "link_to": None,
+        "link": "/desk/accounts-dashboard",
         "logo_url": ICON_URL,
         "icon_image": ICON_URL,
         "hidden": 0,
         "standard": 0,
-        "app": None,
+        "app": "reckon_accounts",
         "restrict_removal": 1,
         "parent_icon": None,
         "sidebar": None,
+        "icon": "accounting",
     }
     values = {field: value for field, value in values.items() if field in fields}
 
