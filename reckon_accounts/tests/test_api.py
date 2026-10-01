@@ -1,4 +1,5 @@
 import importlib
+import json
 import sys
 import unittest
 from unittest.mock import patch
@@ -53,6 +54,12 @@ class TestAPI(unittest.TestCase):
         with self.assertRaises(PermissionError):
             self.api.export_ledger("General Ledger Custom", filters)
         self.assertEqual(self.gateway.frappe.local.response, {})
+
+    def test_dashboard_data_is_json_serializable_and_scoped(self):
+        result = self.api.dashboard_data("Co", "2026-01-01", "2026-01-31")
+        self.assertEqual(result["period"], {"from_date": "2026-01-01", "to_date": "2026-01-31"})
+        self.assertIn("income", result["kpis"])
+        json.dumps(result)
 
     def test_selection_search_obeys_document_permission(self):
         self.gateway.denied_docs.add(("Customer", "Bob"))

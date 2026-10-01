@@ -52,6 +52,13 @@ class TestNavigation(unittest.TestCase):
         self.assertNotIn(("Payment Voucher", "Page", "payment-voucher"), links)
         self.assertNotIn(("Receipt Voucher", "Page", "receipt-voucher"), links)
 
+    def test_dashboard_is_after_home_in_sidebar(self):
+        items = sidebar_document()["items"]
+        self.assertEqual(items[0]["link_to"], "Reckon Accounts")
+        self.assertEqual(items[1]["link_to"], "accounts-dashboard")
+        source = (Path(__file__).parents[1] / "access_control.py").read_text(encoding="utf-8")
+        self.assertIn('_ensure_role_links("Page", "accounts-dashboard")', source)
+
     def test_payment_mode_property_setter_is_server_synced(self):
         path = Path(__file__).parents[1] / "fixtures" / "property_setter.json"
         records = json.loads(path.read_text(encoding="utf-8"))

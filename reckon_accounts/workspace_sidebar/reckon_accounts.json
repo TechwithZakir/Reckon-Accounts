@@ -16,6 +16,14 @@
    "icon": "house"
   },
   {
+   "type": "Link",
+   "label": "Dashboard",
+   "link_type": "Page",
+   "link_to": "accounts-dashboard",
+   "child": 0,
+   "icon": "dashboard"
+  },
+  {
    "type": "Section Break",
    "label": "Voucher Entry",
    "child": 0,

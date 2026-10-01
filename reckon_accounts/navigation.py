@@ -177,7 +177,15 @@ def sidebar_document():
             "link_to": "Reckon Accounts",
             "child": 0,
             "icon": "house",
-        }
+        },
+        {
+            "type": "Link",
+            "label": "Dashboard",
+            "link_type": "Page",
+            "link_to": "accounts-dashboard",
+            "child": 0,
+            "icon": "dashboard",
+        },
     ]
     for label, link_type, names in GROUPS:
         items.append(

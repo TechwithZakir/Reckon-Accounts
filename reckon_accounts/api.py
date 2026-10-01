@@ -6,6 +6,7 @@ from collections.abc import Mapping
 import frappe
 
 from reckon_accounts.accounting.adapters import LedgerAdapter, authorize_report, get_gateway
+from reckon_accounts.accounting.dashboard import build_dashboard
 from reckon_accounts.accounting.dimensions import dimension_contract
 from reckon_accounts.accounting.permissions import PermissionScope
 from reckon_accounts.accounting.reporting import export_csv
@@ -145,6 +146,24 @@ def filter_options(report_name):
         if gateway.can_read_type(value)
     ]
     return {"party_types": sorted(types) + ["Other"], "dimensions": dimensions}
+
+
+@frappe.whitelist()
+def dashboard_data(company, from_date, to_date):
+    """Return the live Accounts Dashboard for one authorized company period."""
+    try:
+        return build_dashboard(
+            get_gateway(),
+            {
+                "company": company,
+                "from_date": from_date,
+                "to_date": to_date,
+                "page": 1,
+                "page_size": 500,
+            },
+        )
+    except ValueError as exc:
+        frappe.throw(str(exc))
 
 
 @frappe.whitelist()

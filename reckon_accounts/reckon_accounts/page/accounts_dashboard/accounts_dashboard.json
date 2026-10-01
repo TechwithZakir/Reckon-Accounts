@@ -1,0 +1,16 @@
+{
+ "doctype": "Page",
+ "name": "accounts-dashboard",
+ "page_name": "accounts-dashboard",
+ "title": "Accounts Dashboard",
+ "module": "Reckon Accounts",
+ "standard": "Yes",
+ "roles": [
+  {"role": "Accounts User"},
+  {"role": "Accounts Manager"},
+  {"role": "Reckon Accounts User"},
+  {"role": "Reckon Accounts Manager"},
+  {"role": "System Manager"},
+  {"role": "Auditor"}
+ ]
+}
