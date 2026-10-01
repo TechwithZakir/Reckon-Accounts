@@ -15,3 +15,26 @@
 @media (max-width: 1280px) { .reckon-voucher-grid, .reckon-list-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }.reckon-activity-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }.reckon-voucher-reports > div { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (max-width: 900px) { .reckon-voucher-page { padding: 16px; }.reckon-voucher-heading { align-items: flex-start; flex-direction: column; }.reckon-analytics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.reckon-attention-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.reckon-voucher-reports > div { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .reckon-voucher-grid, .reckon-list-grid, .reckon-activity-grid, .reckon-analytics-grid, .reckon-attention-grid { grid-template-columns: 1fr; }.reckon-distribution { grid-template-columns: 120px 1fr; }.reckon-voucher-reports > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }.reckon-range-buttons { flex-wrap: wrap; } }
+
+/* Keep the dashboard readable at normal Desk zoom. */
+.reckon-voucher-page .reckon-voucher-heading h1 { font-size: 30px; }
+.reckon-voucher-page .reckon-voucher-heading h2 { font-size: 20px; }
+.reckon-voucher-page .reckon-voucher-heading p { font-size: 14px; }
+.reckon-voucher-page .reckon-voucher-card b { font-size: 16px; }
+.reckon-voucher-page .reckon-voucher-card small { font-size: 14px; }
+.reckon-voucher-page .reckon-list-card { font-size: 14px; }
+.reckon-voucher-page .reckon-activity-card small { font-size: 14px; }
+.reckon-voucher-page .reckon-activity-card strong { font-size: 21px; }
+.reckon-voucher-page .reckon-activity-card b { font-size: 14px; }
+.reckon-voucher-page .reckon-voucher-panel h2, .reckon-voucher-page .reckon-voucher-reports h2 { font-size: 18px; }
+.reckon-voucher-page .reckon-voucher-legend { font-size: 12px; }
+.reckon-voucher-page .reckon-trend-day small { font-size: 11px; }
+.reckon-voucher-page .reckon-distribution-list > div, .reckon-voucher-page .reckon-source-list > div, .reckon-voucher-page .reckon-user-list > div { font-size: 13px; }
+.reckon-voucher-page .reckon-distribution-list small, .reckon-voucher-page .reckon-source-list small { font-size: 12px; }
+.reckon-voucher-page .reckon-pending-list button { font-size: 13px; }
+.reckon-voucher-page .reckon-mini-table table { font-size: 13px; }
+.reckon-voucher-page .reckon-attention-grid button > span:nth-child(2) { font-size: 13px; }
+.reckon-voucher-page .reckon-attention-grid button b { font-size: 18px; }
+.reckon-voucher-page .reckon-voucher-reports header span { font-size: 13px; }
+.reckon-voucher-page .reckon-voucher-reports button { font-size: 12px; }
+.reckon-voucher-page .reckon-range-buttons button { font-size: 12px; }
