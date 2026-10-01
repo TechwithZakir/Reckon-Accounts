@@ -173,8 +173,8 @@ def sidebar_document():
         {
             "type": "Link",
             "label": "Home",
-            "link_type": "Workspace",
-            "link_to": "Reckon Accounts",
+            "link_type": "Page",
+            "link_to": "accounts-dashboard",
             "child": 0,
             "icon": "house",
         },
