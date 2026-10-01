@@ -101,7 +101,7 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
     }
 
     function render(data) {
-        body.html(`<div class='reckon-voucher-heading'><div><div><h1>Voucher Entry</h1><p>Choose a voucher to open a new entry. Review, save and submit in the entry form.</p></div></div><button class='btn btn-primary' data-refresh='1'>&#8635; Refresh Analytics</button></div>` +
+        body.html(`<div class='reckon-voucher-heading'><div><div><h1>Voucher Entry</h1><p>Choose a voucher to open a new entry. Review, save and submit in the entry form.</p></div></div></div>` +
             `<section class='reckon-voucher-section'><div class='reckon-voucher-grid'>${entryCards()}</div></section>` +
             `<section class='reckon-voucher-section'><div class='reckon-voucher-heading reckon-subheading'><div><div><h2>Voucher Lists</h2><p>Open existing vouchers for review, edit or print.</p></div></div></div><div class='reckon-list-grid'>${listCards()}</div></section>` +
             `<section class='reckon-voucher-section'><div class='reckon-voucher-heading reckon-subheading'><div><div><h2>Today's Activity</h2><p>Summary for ${escape(data.period.to_date)}.</p></div></div></div><div class='reckon-activity-grid'>${activityCards(data)}</div></section>` +
@@ -137,7 +137,7 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
         .on("click.reckonVoucherEntry", "[data-range]", function () { applyRange($(this).data("range")); })
         .on("click.reckonVoucherEntry", "[data-refresh]", refresh)
         .on("click.reckonVoucherEntry", "[data-status]", function () { frappe.set_route("List", "Payment Entry", "List"); });
-    page.set_primary_action(__("Refresh Analytics"), refresh, "refresh");
+    page.set_primary_action(__("Refresh"), refresh, "refresh");
     company.$input.add(from_date.$input).add(to_date.$input).on("change.reckonVoucherEntry", refresh);
     $(document).off("keydown.reckonVoucherEntry").on("keydown.reckonVoucherEntry", event => {
         if (frappe.get_route()[0] !== "voucher-entry" || $(".modal:visible").length || event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.repeat) return;

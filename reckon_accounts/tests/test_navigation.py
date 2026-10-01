@@ -103,6 +103,8 @@ class TestNavigation(unittest.TestCase):
         self.assertLess(source.index("Reports"), source.index("Voucher Entry Analytics"))
         self.assertIn("data-range", source)
         self.assertIn("data-status", source)
+        self.assertNotIn("Refresh Analytics", source)
+        self.assertIn('page.set_primary_action(__("Refresh")', source)
         self.assertIn('frappe.set_route("List", entry.doctype, "List")', source)
         self.assertIn("List</button>", source)
         for label in (
