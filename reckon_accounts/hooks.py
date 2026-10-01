@@ -28,6 +28,7 @@ override_doctype_class = {
 after_install = "reckon_accounts.access_control.setup_roles_and_permissions"
 after_migrate = [
     "reckon_accounts.access_control.setup_roles_and_permissions",
+    "reckon_accounts.access_control.set_default_desktop_home_page",
     "reckon_accounts.patches.v0_1.sync_desktop_app_icon.execute",
     "reckon_accounts.payment_entry_setup.configure_payment_entry",
 ]

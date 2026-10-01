@@ -99,6 +99,13 @@ def setup_roles_and_permissions():
     frappe.clear_cache()
 
 
+def set_default_desktop_home_page():
+    """Make the app dashboard the persisted default Desk landing page."""
+    if frappe.db.exists("Page", "accounts-dashboard"):
+        frappe.db.set_default("desktop:home_page", "accounts-dashboard")
+        frappe.clear_cache()
+
+
 def _upsert_permission(doctype, role, permissions):
     if not frappe.db.exists("DocType", doctype):
         return

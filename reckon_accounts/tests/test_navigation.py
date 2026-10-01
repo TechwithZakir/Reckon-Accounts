@@ -59,6 +59,8 @@ class TestNavigation(unittest.TestCase):
         self.assertEqual(items[1]["link_to"], "accounts-dashboard")
         source = (Path(__file__).parents[1] / "access_control.py").read_text(encoding="utf-8")
         self.assertIn('_ensure_role_links("Page", "accounts-dashboard")', source)
+        self.assertIn('def set_default_desktop_home_page()', source)
+        self.assertIn('frappe.db.set_default("desktop:home_page", "accounts-dashboard")', source)
 
     def test_payment_mode_property_setter_is_server_synced(self):
         path = Path(__file__).parents[1] / "fixtures" / "property_setter.json"
