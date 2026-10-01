@@ -99,10 +99,10 @@ def setup_roles_and_permissions():
     frappe.clear_cache()
 
 
-def set_default_desktop_home_page():
-    """Make the app dashboard the persisted default Desk landing page."""
-    if frappe.db.exists("Page", "accounts-dashboard"):
-        frappe.db.set_default("desktop:home_page", "accounts-dashboard")
+def restore_default_desktop_home_page():
+    """Keep the site-wide Desk landing page on the standard workspace."""
+    if frappe.db.get_default("desktop:home_page") == "accounts-dashboard":
+        frappe.db.set_default("desktop:home_page", "workspace")
         frappe.clear_cache()
 
 
