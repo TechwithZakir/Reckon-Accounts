@@ -67,7 +67,10 @@ class TestNavigation(unittest.TestCase):
         self.assertEqual(settings[("remarks", "label")], "Custom Remarks")
         self.assertEqual(settings[("remarks", "read_only_depends_on")], "")
         source = (Path(__file__).parents[1] / "payment_entry_setup.py").read_text(encoding="utf-8")
-        self.assertIn('field_order.index("mode_of_payment") + 1', source)
+        self.assertIn(
+            '_move_after(field_order, "remarks", "custom_column_break_payment_header")',
+            source,
+        )
 
     def test_navigation_names_are_unique(self):
         links = [(kind, name) for _, kind, names in GROUPS for name in names]

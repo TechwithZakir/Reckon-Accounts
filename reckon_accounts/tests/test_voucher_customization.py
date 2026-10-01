@@ -35,6 +35,16 @@ class TestVoucherCustomization(unittest.TestCase):
         self.assertEqual(field["fieldname"], "custom_voucher_subtype")
         self.assertIn("Direct Expense", field["options"])
         self.assertIn("Direct Income", field["options"])
+        fields = {record["fieldname"] for record in records}
+        self.assertTrue(
+            {
+                "custom_column_break_payment_header",
+                "custom_column_break_party",
+                "custom_column_break_accounts",
+                "custom_column_break_amount",
+                "custom_column_break_dimensions",
+            }.issubset(fields)
+        )
 
     def test_navigation_removes_dedicated_voucher_pages(self):
         links = {(kind, name) for _, kind, names in GROUPS for name in names}

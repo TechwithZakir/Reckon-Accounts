@@ -11,5 +11,69 @@
   "default": "Party Settlement",
   "description": "Use Direct Expense or Direct Income for non-party entries.",
   "translatable": 1
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_payment_header",
+  "fieldname": "custom_column_break_payment_header",
+  "fieldtype": "Column Break",
+  "insert_after": "mode_of_payment"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_party",
+  "fieldname": "custom_column_break_party",
+  "fieldtype": "Column Break",
+  "insert_after": "party_name"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_accounts",
+  "fieldname": "custom_column_break_accounts",
+  "fieldtype": "Column Break",
+  "insert_after": "paid_to_account_currency"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_amount",
+  "fieldname": "custom_column_break_amount",
+  "fieldtype": "Column Break",
+  "insert_after": "received_amount"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_writeoff",
+  "fieldname": "custom_column_break_writeoff",
+  "fieldtype": "Column Break",
+  "insert_after": "unallocated_amount"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_transaction",
+  "fieldname": "custom_column_break_transaction",
+  "fieldtype": "Column Break",
+  "insert_after": "reference_date"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_dimensions",
+  "fieldname": "custom_column_break_dimensions",
+  "fieldtype": "Column Break",
+  "insert_after": "cost_center"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-custom_column_break_more_information",
+  "fieldname": "custom_column_break_more_information",
+  "fieldtype": "Column Break",
+  "insert_after": "print_heading"
  }
 ]

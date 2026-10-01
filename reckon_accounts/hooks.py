@@ -35,7 +35,23 @@ after_migrate = [
 fixtures = [
     {
         "dt": "Custom Field",
-        "filters": [["name", "=", "Payment Entry-custom_voucher_subtype"]],
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Payment Entry-custom_voucher_subtype",
+                    "Payment Entry-custom_column_break_payment_header",
+                    "Payment Entry-custom_column_break_party",
+                    "Payment Entry-custom_column_break_accounts",
+                    "Payment Entry-custom_column_break_amount",
+                    "Payment Entry-custom_column_break_writeoff",
+                    "Payment Entry-custom_column_break_transaction",
+                    "Payment Entry-custom_column_break_dimensions",
+                    "Payment Entry-custom_column_break_more_information",
+                ],
+            ]
+        ],
     },
     {
         "dt": "Property Setter",
