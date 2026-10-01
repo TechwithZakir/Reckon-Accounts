@@ -78,6 +78,7 @@ class TestNavigation(unittest.TestCase):
             '"book_advance_payments_in_separate_party_account",\n        "custom_column_break_party"',
             source,
         )
+        self.assertIn('"taxes_and_charges_section",\n        "deductions_or_loss_section"', source)
 
     def test_navigation_names_are_unique(self):
         links = [(kind, name) for _, kind, names in GROUPS for name in names]

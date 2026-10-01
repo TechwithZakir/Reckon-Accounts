@@ -6,14 +6,8 @@ const test = require("node:test");
 
 function load() {
     let handlers;
-    const moved = new WeakSet();
     const sandbox = {
         __: value => value,
-        $: element => ({
-            data: (key, value) => value === undefined ? moved.has(element) : moved.add(element),
-            after: child => { element.after = child; },
-            before: child => { element.before = child; },
-        }),
         frappe: {boot: {party_account_types: {Supplier: "Payable", Customer: "Receivable"}},
             ui: {form: {on: (doctype, events) => { assert.equal(doctype, "Payment Entry"); handlers = events; }}}},
     };
@@ -24,9 +18,6 @@ function load() {
 test("payment labels and required mode follow payment type", () => {
     const events = load();
     const properties = {};
-    const dimensions = {};
-    const accounts = {};
-    const taxes = {};
     const collapsed = [];
     const accountingDimensionsSection = {
         collapse: value => collapsed.push(value),
@@ -34,9 +25,7 @@ test("payment labels and required mode follow payment type", () => {
     const frm = {
         doc: {payment_type: "Receive"},
         layout: {sections_dict: {accounting_dimensions_section: accountingDimensionsSection}},
-        fields_dict: {accounting_dimensions_section: {wrapper: dimensions},
-            payment_accounts_section: {wrapper: accounts},
-            taxes_and_charges_section: {wrapper: taxes}},
+        fields_dict: {},
         set_df_property: (field, property, value) => {properties[field + "." + property] = value;},
         toggle_display: () => {},
         set_query: () => {},
@@ -50,8 +39,6 @@ test("payment labels and required mode follow payment type", () => {
     assert.equal("accounting_dimensions_section.collapsible" in properties, false);
     assert.equal(accountingDimensionsSection.expanded_by_user, true);
     assert.deepEqual(collapsed, [false]);
-    assert.equal(dimensions.before, accounts);
-    assert.equal(dimensions.after, taxes);
     frm.doc.payment_type = "Pay";
     events.payment_type(frm);
     assert.equal(properties["party_section.label"], "Party Details");

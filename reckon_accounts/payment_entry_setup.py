@@ -42,6 +42,12 @@ def configure_payment_entry():
         "book_advance_payments_in_separate_party_account",
     )
     _move_after(field_order, "apply_tds", "reconcile_on_advance_payment_date")
+    _move_block_after(
+        field_order,
+        "taxes_and_charges_section",
+        "deductions_or_loss_section",
+        "custom_column_break_dimensions",
+    )
     frappe.make_property_setter(
         {
             "doctype": "Payment Entry",
@@ -61,3 +67,16 @@ def _move_after(field_order, fieldname, anchor):
         return
     field_order.remove(fieldname)
     field_order.insert(field_order.index(anchor) + 1, fieldname)
+
+
+def _move_block_after(field_order, start, end_before, anchor):
+    """Move a native section and its fields while preserving internal order."""
+    if start not in field_order or end_before not in field_order or anchor not in field_order:
+        return
+    start_index = field_order.index(start)
+    end_index = field_order.index(end_before)
+    if start_index >= end_index:
+        return
+    block = field_order[start_index:end_index]
+    del field_order[start_index:end_index]
+    field_order[field_order.index(anchor) + 1:field_order.index(anchor) + 1] = block

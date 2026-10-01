@@ -25,20 +25,6 @@
         },
     };
 
-    function arrange_sections(frm) {
-        const dimensions = frm.fields_dict.accounting_dimensions_section?.wrapper;
-        const accounts = frm.fields_dict.payment_accounts_section?.wrapper;
-        const taxes = frm.fields_dict.taxes_and_charges_section?.wrapper;
-        if (dimensions && accounts && !$(accounts).data("reckon-moved")) {
-            $(dimensions).before(accounts);
-            $(accounts).data("reckon-moved", true);
-        }
-        if (dimensions && taxes && !$(taxes).data("reckon-moved")) {
-            $(dimensions).after(taxes);
-            $(taxes).data("reckon-moved", true);
-        }
-    }
-
     function expand_accounting_dimensions(frm) {
         const section = frm.layout?.sections_dict?.accounting_dimensions_section;
         if (!section?.collapse) {
@@ -56,7 +42,6 @@
         }
         frm.set_df_property("party_section", "label", __("Party Details"));
         frm.set_df_property("mode_of_payment", "reqd", 1);
-        arrange_sections(frm);
     }
 
     function apply_direct_layout(frm) {
