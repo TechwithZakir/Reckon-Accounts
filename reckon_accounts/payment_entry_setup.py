@@ -6,7 +6,7 @@ import frappe
 
 THREE_COLUMN_BREAKS = (
     ("custom_column_break_payment_header", "mode_of_payment"),
-    ("custom_column_break_party", "party_name"),
+    ("custom_column_break_party", "contact_email"),
     ("custom_column_break_accounts", "paid_to_account_currency"),
     ("custom_column_break_amount", "received_amount"),
     ("custom_column_break_writeoff", "unallocated_amount"),

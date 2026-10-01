@@ -26,7 +26,7 @@
   "name": "Payment Entry-custom_column_break_party",
   "fieldname": "custom_column_break_party",
   "fieldtype": "Column Break",
-  "insert_after": "party_name"
+  "insert_after": "contact_email"
  },
  {
   "doctype": "Custom Field",
