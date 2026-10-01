@@ -10,6 +10,7 @@ from reckon_accounts.accounting.dashboard import build_dashboard
 from reckon_accounts.accounting.dimensions import dimension_contract
 from reckon_accounts.accounting.permissions import PermissionScope
 from reckon_accounts.accounting.reporting import export_csv
+from reckon_accounts.accounting.voucher_entry_dashboard import build_voucher_entry_dashboard
 from reckon_accounts.accounting.voucher_service import (
     create_direct_expense,
     create_direct_income,
@@ -161,6 +162,18 @@ def dashboard_data(company, from_date, to_date):
                 "page": 1,
                 "page_size": 500,
             },
+        )
+    except ValueError as exc:
+        frappe.throw(str(exc))
+
+
+@frappe.whitelist()
+def voucher_entry_data(company, from_date, to_date):
+    """Return permission-aware voucher activity and entry analytics."""
+    try:
+        return build_voucher_entry_dashboard(
+            frappe,
+            {"company": company, "from_date": from_date, "to_date": to_date},
         )
     except ValueError as exc:
         frappe.throw(str(exc))

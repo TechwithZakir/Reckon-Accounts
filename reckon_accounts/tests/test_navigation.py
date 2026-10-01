@@ -93,12 +93,15 @@ class TestNavigation(unittest.TestCase):
         links = [(kind, name) for _, kind, names in GROUPS for name in names]
         self.assertEqual(len(links), len(set(links)))
 
-    def test_voucher_page_contains_daily_counts_and_requested_reports(self):
+    def test_voucher_page_contains_analytics_and_requested_reports(self):
         path = Path(__file__).parents[1] / "reckon_accounts/page/voucher_entry/voucher_entry.js"
         source = path.read_text(encoding="utf-8")
-        self.assertIn("frappe.db.count", source)
-        self.assertIn('frappe.set_route("List", doctype, "List")', source)
-        self.assertIn('label + " List"', source)
+        self.assertIn("reckon_accounts.api.voucher_entry_data", source)
+        self.assertIn("Voucher Entry Analytics", source)
+        self.assertIn("data-range", source)
+        self.assertIn("data-status", source)
+        self.assertIn('frappe.set_route("List", entry.doctype, "List")', source)
+        self.assertIn("List</button>", source)
         for label in (
             "Day Book",
             "Cash Book",
@@ -115,14 +118,14 @@ class TestNavigation(unittest.TestCase):
             "Item-wise Purchase Register",
             "Sales Register",
             "Purchase Register",
-            "Financial Reports (ERPNext)",
         ):
             self.assertIn(f'"{label}"', source)
+        self.assertIn("Financial Reports (ERPNext)", source)
         self.assertNotIn('page_route: "payment-voucher"', source)
         self.assertNotIn('page_route: "receipt-voucher"', source)
         self.assertIn('custom_voucher_subtype: "Direct Expense"', source)
         self.assertIn('custom_voucher_subtype: "Direct Income"', source)
-        self.assertIn('frappe.new_doc(doctype', source)
+        self.assertIn("frappe.new_doc(entry.doctype", source)
 
     def test_desktop_app_uses_packaged_custom_icon(self):
         from reckon_accounts import hooks
