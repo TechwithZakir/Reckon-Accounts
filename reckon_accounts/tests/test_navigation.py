@@ -99,6 +99,8 @@ class TestNavigation(unittest.TestCase):
         self.assertIn("reckon_accounts.api.voucher_entry_data", source)
         self.assertIn("Voucher Entry Analytics", source)
         self.assertNotIn("reckon-step", source)
+        self.assertLess(source.index("Attention Required"), source.index("Voucher Entry Analytics"))
+        self.assertLess(source.index("Reports"), source.index("Voucher Entry Analytics"))
         self.assertIn("data-range", source)
         self.assertIn("data-status", source)
         self.assertIn('frappe.set_route("List", entry.doctype, "List")', source)
