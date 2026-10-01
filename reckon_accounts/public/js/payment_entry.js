@@ -21,21 +21,16 @@
             paid_from: __("Account Paid From"),
             paid_to: __("Account Paid To"),
             paid_amount: __("Paid Amount"),
-            party_section: __("Payment From / To"),
+            party_section: __("Party Details"),
         },
     };
 
     function arrange_sections(frm) {
         const dimensions = frm.fields_dict.accounting_dimensions_section?.wrapper;
-        const amounts = frm.fields_dict.payment_amounts_section?.wrapper;
         const accounts = frm.fields_dict.payment_accounts_section?.wrapper;
-        if (amounts && accounts && !$(amounts).data("reckon-moved")) {
-            $(accounts).before(amounts);
-            $(amounts).data("reckon-moved", true);
-        }
-        if (dimensions && amounts && !$(dimensions).data("reckon-moved")) {
-            $(amounts).after(dimensions);
-            $(dimensions).data("reckon-moved", true);
+        if (dimensions && accounts && !$(accounts).data("reckon-moved")) {
+            $(dimensions).before(accounts);
+            $(accounts).data("reckon-moved", true);
         }
     }
 
@@ -54,6 +49,7 @@
         for (const [fieldname, label] of Object.entries(selected)) {
             frm.set_df_property(fieldname, "label", label);
         }
+        frm.set_df_property("party_section", "label", __("Party Details"));
         frm.set_df_property("mode_of_payment", "reqd", 1);
         arrange_sections(frm);
     }
@@ -98,7 +94,6 @@
         for (const fieldname of party_fields) frm.toggle_display(fieldname, !direct_mode);
 
         if (!direct_mode) {
-            frm.set_df_property("payment_accounts_section", "label", __("Payment From / To"));
             frm.set_df_property("paid_from", "label", labels[frm.doc.payment_type]?.paid_from || __("Paid From"));
             frm.set_df_property("paid_to", "label", labels[frm.doc.payment_type]?.paid_to || __("Paid To"));
             return;

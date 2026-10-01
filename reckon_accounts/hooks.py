@@ -60,6 +60,7 @@ fixtures = [
                 "name",
                 "in",
                 [
+                    "Payment Entry-naming_series-hidden",
                     "Payment Entry-mode_of_payment-reqd",
                     "Payment Entry-custom_remarks-default",
                     "Payment Entry-custom_remarks-hidden",

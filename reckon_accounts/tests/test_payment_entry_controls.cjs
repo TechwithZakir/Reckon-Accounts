@@ -24,7 +24,6 @@ function load() {
 test("payment labels and required mode follow payment type", () => {
     const events = load();
     const properties = {};
-    const amounts = {};
     const dimensions = {};
     const accounts = {};
     const collapsed = [];
@@ -34,8 +33,7 @@ test("payment labels and required mode follow payment type", () => {
     const frm = {
         doc: {payment_type: "Receive"},
         layout: {sections_dict: {accounting_dimensions_section: accountingDimensionsSection}},
-        fields_dict: {payment_amounts_section: {wrapper: amounts},
-            accounting_dimensions_section: {wrapper: dimensions},
+        fields_dict: {accounting_dimensions_section: {wrapper: dimensions},
             payment_accounts_section: {wrapper: accounts}},
         set_df_property: (field, property, value) => {properties[field + "." + property] = value;},
         toggle_display: () => {},
@@ -45,16 +43,15 @@ test("payment labels and required mode follow payment type", () => {
     assert.equal(properties["paid_from.label"], "Received From Account");
     assert.equal(properties["paid_to.label"], "Received To Account");
     assert.equal(properties["paid_amount.label"], "Received Amount");
-    assert.equal(properties["party_section.label"], "Received From");
+    assert.equal(properties["party_section.label"], "Party Details");
     assert.equal(properties["mode_of_payment.reqd"], 1);
     assert.equal("accounting_dimensions_section.collapsible" in properties, false);
     assert.equal(accountingDimensionsSection.expanded_by_user, true);
     assert.deepEqual(collapsed, [false]);
-    assert.equal(accounts.before, amounts);
-    assert.equal(amounts.after, dimensions);
+    assert.equal(dimensions.before, accounts);
     frm.doc.payment_type = "Pay";
     events.payment_type(frm);
-    assert.equal(properties["party_section.label"], "Payment To");
+    assert.equal(properties["party_section.label"], "Party Details");
     assert.equal(properties["paid_amount.label"], "Paid Amount");
 });
 

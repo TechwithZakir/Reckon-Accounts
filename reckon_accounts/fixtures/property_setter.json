@@ -1,6 +1,16 @@
 [
  {
   "doctype": "Property Setter",
+  "name": "Payment Entry-naming_series-hidden",
+  "doc_type": "Payment Entry",
+  "doctype_or_field": "DocField",
+  "field_name": "naming_series",
+  "property": "hidden",
+  "property_type": "Check",
+  "value": "1"
+ },
+ {
+  "doctype": "Property Setter",
   "name": "Payment Entry-mode_of_payment-reqd",
   "doc_type": "Payment Entry",
   "doctype_or_field": "DocField",
