@@ -145,13 +145,13 @@ class TestNavigation(unittest.TestCase):
         self.assertTrue(path.is_file())
         self.assertEqual(len(hashlib.sha256(path.read_bytes()).hexdigest()), 64)
 
-    def test_migration_points_app_icon_to_dashboard(self):
+    def test_migration_repairs_workspace_sidebar_icon(self):
         path = Path(__file__).parents[1] / "patches/v0_1/sync_desktop_app_icon.py"
         source = path.read_text(encoding="utf-8")
         self.assertIn('"icon_type": "Link"', source)
-        self.assertIn('"link_type": "Page"', source)
+        self.assertIn('"link_type": "Workspace Sidebar"', source)
         self.assertIn('"standard": 0', source)
-        self.assertIn('"link_to": "accounts-dashboard"', source)
+        self.assertIn('"link_to": LABEL', source)
         self.assertIn('"link": None', source)
         self.assertIn('"logo_url": ICON_URL', source)
         self.assertIn('"icon_image": ICON_URL', source)

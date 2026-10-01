@@ -1,4 +1,4 @@
-"""Keep the Reckon Accounts app icon pointed at its module landing page."""
+"""Keep the Frappe 16 workspace desktop icon and its custom image in sync."""
 
 import frappe
 
@@ -14,8 +14,8 @@ def execute():
     fields = {field.fieldname for field in meta.fields}
     values = {
         "icon_type": "Link",
-        "link_type": "Page",
-        "link_to": "accounts-dashboard",
+        "link_type": "Workspace Sidebar",
+        "link_to": LABEL,
         "link": None,
         "logo_url": ICON_URL,
         "icon_image": ICON_URL,
