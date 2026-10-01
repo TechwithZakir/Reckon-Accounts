@@ -180,7 +180,7 @@ def sidebar_document():
         },
         {
             "type": "Link",
-            "label": "Dashboard",
+            "label": "Accounts Dashboard",
             "link_type": "Page",
             "link_to": "accounts-dashboard",
             "child": 0,

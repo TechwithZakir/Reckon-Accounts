@@ -55,6 +55,7 @@ class TestNavigation(unittest.TestCase):
     def test_dashboard_is_after_home_in_sidebar(self):
         items = sidebar_document()["items"]
         self.assertEqual(items[0]["link_to"], "Reckon Accounts")
+        self.assertEqual(items[1]["label"], "Accounts Dashboard")
         self.assertEqual(items[1]["link_to"], "accounts-dashboard")
         source = (Path(__file__).parents[1] / "access_control.py").read_text(encoding="utf-8")
         self.assertIn('_ensure_role_links("Page", "accounts-dashboard")', source)
