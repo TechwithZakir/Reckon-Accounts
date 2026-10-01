@@ -71,6 +71,22 @@ class TestAPI(unittest.TestCase):
         )
         self.assertEqual(records, [["Alice", "Alice Ltd"]])
 
+    def test_selection_search_accepts_frappe_link_validation_page_lengths(self):
+        records = self.api.search_records(
+            "Customer",
+            "",
+            "name",
+            0,
+            25000,
+            {
+                "report_name": "Party Ledger",
+                "scope_field": "party",
+                "company": "Co",
+                "party_type": "Customer",
+            },
+        )
+        self.assertEqual(records, [["Alice", "Alice Ltd"], ["Bob", "Bob Ltd"]])
+
     def test_arbitrary_doctype_and_report_search_rejected(self):
         with self.assertRaises(PermissionError):
             self.api.search_records(

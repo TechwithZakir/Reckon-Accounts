@@ -186,7 +186,8 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
         allowed.update(current_assets_group="Account", current_liabilities_group="Account")
     if allowed.get(fieldname) != doctype:
         frappe.throw("Unsupported selection scope", frappe.PermissionError)
-    if not 0 <= int(start) <= 1000 or not 1 <= int(page_len) <= 50:
+    start, page_len = _normalize_search_page(start, page_len)
+    if not 0 <= start <= 1000:
         frappe.throw("Invalid search page")
     query = []
     company = filters.get("company")
@@ -211,8 +212,20 @@ def search_records(doctype, txt, searchfield, start, page_len, filters):
         permitted = [record for record in permitted if gateway.can_read_type(record["name"])]
     return [
         [record["name"], record.get(title) or record["name"]]
-        for record in permitted[int(start) : int(start) + int(page_len)]
+        for record in permitted[start : start + page_len]
     ]
+
+
+def _normalize_search_page(start, page_len):
+    """Accept Frappe link-search pagination while keeping queries bounded."""
+    try:
+        start = int(start or 0)
+        page_len = int(page_len or 0)
+    except (TypeError, ValueError):
+        frappe.throw("Invalid search page")
+
+    # Frappe uses zero and a large validation length for translated link searches.
+    return start, min(page_len if page_len > 0 else 50, 50)
 
 
 @frappe.whitelist()
