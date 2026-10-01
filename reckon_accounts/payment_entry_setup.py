@@ -48,6 +48,12 @@ def configure_payment_entry():
         "deductions_or_loss_section",
         "custom_column_break_dimensions",
     )
+    _move_block_after(
+        field_order,
+        "transaction_references",
+        "accounting_dimensions_section",
+        "custom_column_break_dimensions",
+    )
     frappe.make_property_setter(
         {
             "doctype": "Payment Entry",
