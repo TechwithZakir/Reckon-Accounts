@@ -137,8 +137,8 @@ class TestNavigation(unittest.TestCase):
 
         icon = hooks.add_to_apps_screen[0]
         self.assertEqual(icon["logo"], "/assets/reckon_accounts/images/reckon-accounts-icon.png")
-        self.assertEqual(icon["route"], "/desk/reckon-accounts")
-        self.assertEqual(icon["desk_route"], "/desk/reckon-accounts")
+        self.assertEqual(icon["route"], "/desk/accounts-dashboard")
+        self.assertEqual(icon["desk_route"], "/desk/accounts-dashboard")
         path = Path(__file__).parents[1] / "public/images/reckon-accounts-icon.png"
         self.assertTrue(path.is_file())
         self.assertEqual(len(hashlib.sha256(path.read_bytes()).hexdigest()), 64)

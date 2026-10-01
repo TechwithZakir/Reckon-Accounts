@@ -7,7 +7,7 @@ app_description = "Tally-oriented accounting reports and navigation for ERPNext"
 app_logo_url = "/assets/reckon_accounts/images/reckon-accounts-icon.png"
 app_icon_url = app_logo_url
 app_icon_title = "Reckon Accounts"
-app_icon_route = "/desk/reckon-accounts"
+app_icon_route = "/desk/accounts-dashboard"
 
 add_to_apps_screen = [
     {
