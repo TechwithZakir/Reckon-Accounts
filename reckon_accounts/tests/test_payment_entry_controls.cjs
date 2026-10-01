@@ -36,6 +36,8 @@ test("payment labels and required mode follow payment type", () => {
     assert.equal(properties["paid_amount.label"], "Received Amount");
     assert.equal(properties["party_section.label"], "Party Details");
     assert.equal(properties["mode_of_payment.reqd"], 1);
+    assert.equal(properties["payment_amounts_section.depends_on"], "eval:(doc.paid_to && doc.paid_from)");
+    assert.equal(properties["received_amount.depends_on"], null);
     assert.equal("accounting_dimensions_section.collapsible" in properties, false);
     assert.equal(accountingDimensionsSection.expanded_by_user, true);
     assert.deepEqual(collapsed, [false]);
@@ -48,17 +50,20 @@ test("payment labels and required mode follow payment type", () => {
 test("direct expense and income subtypes map to Pay and Receive", () => {
     const events = load();
     const values = [];
+    const properties = {};
     const frm = {
         doc: {payment_type: "Pay", custom_voucher_subtype: "Direct Expense"},
         layout: {sections_dict: {}},
         fields_dict: {},
-        set_df_property: () => {},
+        set_df_property: (field, property, value) => {properties[field + "." + property] = value;},
         toggle_display: () => {},
         set_query: () => {},
         set_value: (field, value) => values.push([field, value]),
     };
     events.custom_voucher_subtype(frm);
     assert.deepEqual(values.slice(0, 1), [["payment_type", "Pay"]]);
+    assert.equal(properties["payment_amounts_section.depends_on"], "eval:(doc.paid_to && doc.paid_from)");
+    assert.equal(properties["received_amount.depends_on"], "eval:!doc.custom_voucher_subtype");
     frm.doc.custom_voucher_subtype = "Direct Income";
     frm.doc.payment_type = "Receive";
     events.custom_voucher_subtype(frm);

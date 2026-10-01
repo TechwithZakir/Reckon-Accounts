@@ -52,6 +52,8 @@
         const native_paid_to_visibility =
             'eval:(in_list(["Internal Transfer", "Receive"], doc.payment_type) || doc.party)';
         const direct_visibility = "eval:doc.payment_type && doc.custom_voucher_subtype";
+        const native_amount_visibility = "eval:(doc.paid_to && doc.paid_from)";
+        const direct_amount_visibility = "eval:!doc.custom_voucher_subtype";
         frm.set_df_property(
             "paid_from",
             "depends_on",
@@ -65,8 +67,14 @@
         frm.set_df_property(
             "payment_amounts_section",
             "depends_on",
-            direct_mode ? direct_visibility : "eval:(doc.paid_to && doc.paid_from)",
+            native_amount_visibility,
         );
+        for (const fieldname of [
+            "received_amount", "received_amount_after_tax", "base_received_amount",
+            "base_received_amount_after_tax", "target_exchange_rate",
+        ]) {
+            frm.set_df_property(fieldname, "depends_on", direct_mode ? direct_amount_visibility : null);
+        }
         apply_dimension_visibility(frm, direct_mode, direct_visibility);
         const party_fields = [
             "party_section", "party_type", "party", "party_name", "bank_account",
