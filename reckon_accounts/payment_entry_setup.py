@@ -31,6 +31,17 @@ def configure_payment_entry():
     _move_after(field_order, "remarks", "custom_column_break_payment_header")
     for fieldname, anchor in THREE_COLUMN_BREAKS[1:]:
         _move_after(field_order, fieldname, anchor)
+    _move_after(
+        field_order,
+        "book_advance_payments_in_separate_party_account",
+        "custom_column_break_party",
+    )
+    _move_after(
+        field_order,
+        "reconcile_on_advance_payment_date",
+        "book_advance_payments_in_separate_party_account",
+    )
+    _move_after(field_order, "apply_tds", "reconcile_on_advance_payment_date")
     frappe.make_property_setter(
         {
             "doctype": "Payment Entry",

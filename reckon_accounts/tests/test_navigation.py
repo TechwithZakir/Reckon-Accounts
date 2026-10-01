@@ -57,6 +57,7 @@ class TestNavigation(unittest.TestCase):
         records = json.loads(path.read_text(encoding="utf-8"))
         settings = {(row["field_name"], row["property"]): row["value"] for row in records}
         self.assertEqual(settings[("naming_series", "hidden")], "1")
+        self.assertEqual(settings[("party_section", "label")], "Party Details")
         self.assertEqual(settings[("mode_of_payment", "reqd")], "1")
 
     def test_payment_remarks_use_standard_metadata_layout(self):
@@ -73,6 +74,10 @@ class TestNavigation(unittest.TestCase):
             source,
         )
         self.assertIn('("custom_column_break_party", "contact_email")', source)
+        self.assertIn(
+            '"book_advance_payments_in_separate_party_account",\n        "custom_column_break_party"',
+            source,
+        )
 
     def test_navigation_names_are_unique(self):
         links = [(kind, name) for _, kind, names in GROUPS for name in names]
