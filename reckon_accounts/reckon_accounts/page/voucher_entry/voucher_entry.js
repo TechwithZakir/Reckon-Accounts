@@ -18,7 +18,7 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
         {key: "F6", label: "Receipt", description: "New Receipt Entry", icon: "&#8595;", tone: "teal", doctype: "Payment Entry", defaults: {payment_type: "Receive", custom_voucher_subtype: "Direct Income"}},
         {key: "F7", label: "Journal", description: "New Journal Entry", icon: "=", tone: "blue", doctype: "Journal Entry", defaults: {voucher_type: "Journal Entry"}},
         {key: "F8", label: "Sales", description: "New Sales Entry", icon: "&#9632;", tone: "orange", doctype: "Sales Invoice", defaults: {}},
-        {key: "F9", label: "Purchase", description: "New Purchase Entry", icon: "&#9632;", tone: "purple", doctype: "Purchase Invoice", defaults: {}},
+        {key: "F9", label: "Purchase Receipt", description: "New Purchase Receipt", icon: "&#9632;", tone: "purple", doctype: "Purchase Invoice", defaults: {}},
     ];
     const reports = ["Day Book", "Cash Book", "Bank Book", "Party Ledger", "General Ledger Custom", "Payment Register", "Receipt Register", "Trial Balance", "Balance Sheet", "Profit and Loss Statement", "Trial Balance for Party", "Item-wise Sales Register", "Item-wise Purchase Register", "Sales Register", "Purchase Register"];
     const actions = {};
@@ -57,7 +57,7 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
     function activityCards(data) {
         const cards = [
             ["receipts", "Receipts", "teal"], ["payments", "Payments", "red"], ["journals", "Journals", "blue"],
-            ["sales", "Sales Invoices", "orange"], ["purchases", "Purchase Invoices", "purple"],
+            ["sales", "Sales Invoices", "orange"], ["purchases", "Purchase Receipts", "purple"],
         ];
         return cards.map(([key, label, tone]) => `<article class='reckon-activity-card reckon-tone-${tone}'><span class='reckon-activity-icon'>${key.slice(0, 2).toUpperCase()}</span><div><small>${escape(label)}</small><strong>${escape(data.activity[key]?.count || 0)}</strong><b>${escape(money(data.activity[key]?.amount || 0))}</b></div></article>`).join("");
     }

@@ -135,6 +135,9 @@ class TestNavigation(unittest.TestCase):
         self.assertIn('custom_voucher_subtype: "Direct Expense"', source)
         self.assertIn('custom_voucher_subtype: "Direct Income"', source)
         self.assertIn("frappe.new_doc(entry.doctype", source)
+        self.assertIn('label: "Purchase Receipt"', source)
+        self.assertIn('description: "New Purchase Receipt"', source)
+        self.assertIn('["purchases", "Purchase Receipts", "purple"]', source)
 
     def test_desktop_app_uses_packaged_custom_icon(self):
         from reckon_accounts import hooks
