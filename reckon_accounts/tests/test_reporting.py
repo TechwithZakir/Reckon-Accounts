@@ -3,6 +3,7 @@ import unittest
 from dataclasses import replace
 from io import StringIO
 
+from reckon_accounts.accounting.books import book_tuple, make_book
 from reckon_accounts.accounting.reporting import export_csv, message, report_tuple
 from reckon_accounts.tests.test_service import ledger, posting
 
@@ -35,6 +36,20 @@ class TestReporting(unittest.TestCase):
         self.assertEqual(result[1][0]["row_kind"], "scope")
         self.assertIn("PAGE 1/1", result[1][0]["description"])
         self.assertEqual(len(result[4]), 6)
+
+    def test_book_summary_cards_use_the_filtered_ledger_scope(self):
+        result = make_book(
+            ledger(
+                [posting("b", credit=40, account="Bank")],
+                report="Cash Bank Summary",
+                account="Bank",
+            )
+        )
+        summary = book_tuple(result)[4]
+        values = {card["label"]: card["value"] for card in summary}
+        self.assertEqual(values["Debit"], 0)
+        self.assertEqual(values["Credit"], 40)
+        self.assertEqual(values["Closing Credit"], 40)
 
     def test_ledger_titles_preserve_distinct_account_identities(self):
         records = [

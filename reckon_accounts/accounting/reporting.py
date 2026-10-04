@@ -81,16 +81,7 @@ def message(result):
 
 
 def report_tuple(result):
-    summary = [
-        dict(
-            label=key.replace("_", " ").title(),
-            value=value,
-            datatype="Currency",
-            currency=result.currency,
-            indicator="Blue",
-        )
-        for key, value in result.totals().items()
-    ]
+    summary = summary_cards(result)
     page_notice = {
         "row_kind": "scope",
         "description": (
@@ -107,6 +98,20 @@ def report_tuple(result):
         summary,
         True,
     )
+
+
+def summary_cards(result):
+    """Build summary cards from the complete, already-filtered ledger scope."""
+    return [
+        dict(
+            label=key.replace("_", " ").title(),
+            value=value,
+            datatype="Currency",
+            currency=result.currency,
+            indicator="Blue",
+        )
+        for key, value in result.totals().items()
+    ]
 
 
 def _csv_text(value):

@@ -12,7 +12,7 @@ from io import StringIO
 
 from reckon_accounts.accounting.balances import Balance
 from reckon_accounts.accounting.catalog import BOOK_REPORTS, VOUCHER_VIEWS
-from reckon_accounts.accounting.reporting import _csv_text, columns, context
+from reckon_accounts.accounting.reporting import _csv_text, columns, context, summary_cards
 
 
 @dataclass(frozen=True)
@@ -590,7 +590,7 @@ def book_tuple(result):
         [row(result.ledger, "scope", notice), *result.rows()],
         f"<p>{escape(notice)}</p><details><summary>Active filters</summary><pre>{scope}</pre></details>",
         None,
-        [],
+        summary_cards(result.ledger),
         True,
     )
 

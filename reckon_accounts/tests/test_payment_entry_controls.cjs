@@ -69,3 +69,10 @@ test("direct expense and income subtypes map to Pay and Receive", () => {
     events.custom_voucher_subtype(frm);
     assert.ok(values.some(([field, value]) => field === "payment_type" && value === "Receive"));
 });
+
+test("direct subtype options expose the new labels without changing stored values", () => {
+    const source = fs.readFileSync(path.join(__dirname, "../public/js/payment_entry.js"), "utf8");
+    assert(source.includes('"Direct Expense": __("Expense (Non-party)")'));
+    assert(source.includes('"Direct Income": __("Income (Non-party)")'));
+    assert(source.includes("this.value"));
+});

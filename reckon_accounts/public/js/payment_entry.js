@@ -4,6 +4,20 @@
         "Direct Income": {payment_type: "Receive", profit_loss_root_type: "Income"},
     };
 
+    const subtype_labels = {
+        "Direct Expense": __("Expense (Non-party)"),
+        "Direct Income": __("Income (Non-party)"),
+    };
+
+    function apply_subtype_labels(frm) {
+        const field = frm.fields_dict?.custom_voucher_subtype;
+        if (!field?.$input) return;
+        field.$input.find("option").each(function () {
+            const label = subtype_labels[this.value];
+            if (label) this.textContent = label;
+        });
+    }
+
     const labels = {
         Receive: {
             paid_from: __("Received From Account"),
@@ -149,6 +163,7 @@
     }
 
     function apply_customization(frm) {
+        apply_subtype_labels(frm);
         apply_payment_labels(frm);
         apply_direct_layout(frm);
         set_account_queries(frm);
