@@ -28,6 +28,9 @@ test("each report has strict scope controls and correct required account", () =>
         assert.equal(fields.length, new Set(fields).size);
         assert(fields.includes("cost_center") && fields.includes("project"));
         assert(fields.includes("party_type") && fields.includes("party"));
+        const party = report.filters.find((field) => field.fieldname === "party");
+        assert.equal(party.fieldtype, "Link");
+        assert.equal(party.options, "Customer");
         assert(fields.includes("finance_book") && fields.includes("dimensions"));
         assert.equal(Boolean(report.filters.find((f) => f.fieldname === "account").reqd), false);
     }
@@ -104,6 +107,7 @@ test("leaving Reckon restores normal export behavior for standard reports", asyn
         report_name: "Day Book",
         export_report: () => {standardExports++;},
         get_filter: () => ({get_value: () => "", df: {}, refresh: () => {}}),
+        get_filter_value: () => "",
         get_filter_values: () => ({company: "Co"}),
         page: {add_inner_button: () => {}},
     };

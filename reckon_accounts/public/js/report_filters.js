@@ -26,7 +26,7 @@ reckon_accounts.report_settings = function (report_name) {
         link("cost_center", "Cost Center", "Cost Center"),
         link("project", "Project", "Project"),
         {fieldname: "party_type", label: __("Party Type"), fieldtype: "Select", options: [""]},
-        {fieldname: "party", label: __("Party"), fieldtype: "Dynamic Link", options: "party_type",
+        {fieldname: "party", label: __("Party"), fieldtype: "Link", options: "Customer",
             get_query: () => search("party"), depends_on: "eval:doc.party_type && doc.party_type !== 'Other'"},
         {fieldname: "only_entries_without_party", label: __("Only Entries Without Party"),
             fieldtype: "Check", default: 0},
@@ -67,7 +67,10 @@ reckon_accounts.report_settings = function (report_name) {
                 if (report._no_refresh) return;
                 report._no_refresh = true;
                 try {
-                    if (filter.fieldname === "party_type") await report.set_filter_value("party", "");
+                    if (filter.fieldname === "party_type") {
+                        await report.set_filter_value("party", "");
+                        set_party_link_options(report);
+                    }
                     if (filter.fieldname === "voucher_type") await report.set_filter_value("voucher_no", "");
                     if (filter.fieldname === "company") {
                         for (const name of ["account", "cost_center", "project", "party_type", "party", "voucher_no", "finance_book", "fiscal_year"])
@@ -109,6 +112,7 @@ reckon_accounts.report_settings = function (report_name) {
             const selected = partyControl.get_value();
             partyControl.df.options = ["", ...options.party_types];
             partyControl.refresh();
+            set_party_link_options(report);
             if (selected) await partyControl.set_value(selected);
             const exportFull = () => {
                 const values = report.get_filter_values(true);
@@ -225,4 +229,12 @@ reckon_accounts.report_settings = function (report_name) {
             return default_formatter(value, row, column, data);
         },
     };
+
+    function set_party_link_options(report) {
+        const partyType = report.get_filter_value ? report.get_filter_value("party_type") : "";
+        const party = report.get_filter("party");
+        if (!party) return;
+        party.df.options = partyType && partyType !== "Other" ? partyType : "Customer";
+        party.refresh();
+    }
 };
