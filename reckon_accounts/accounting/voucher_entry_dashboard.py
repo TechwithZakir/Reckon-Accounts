@@ -10,7 +10,7 @@ VOUCHER_TYPES = (
     ("Payment Entry", "Receipt", "receipts"),
     ("Journal Entry", "Journal", "journals"),
     ("Sales Invoice", "Sales", "sales"),
-    ("Purchase Invoice", "Purchase", "purchases"),
+    ("Purchase Receipt", "Purchase Receipt", "purchases"),
 )
 
 
@@ -217,7 +217,7 @@ def _amount(doctype, row):
     fields = {
         "Payment Entry": ("base_paid_amount", "base_received_amount", "paid_amount", "received_amount"),
         "Sales Invoice": ("base_grand_total", "grand_total"),
-        "Purchase Invoice": ("base_grand_total", "grand_total"),
+        "Purchase Receipt": ("base_grand_total", "grand_total"),
         "Journal Entry": ("total_debit", "total_credit"),
     }[doctype]
     for field in fields:

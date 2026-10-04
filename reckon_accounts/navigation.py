@@ -78,6 +78,7 @@ GROUPS = (
             "Payment Entry",
             "Sales Invoice",
             "Purchase Invoice",
+            "Purchase Receipt",
             "Dunning",
             "Bank Transaction",
             "Payment Reconciliation",

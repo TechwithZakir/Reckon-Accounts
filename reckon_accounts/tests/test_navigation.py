@@ -137,7 +137,11 @@ class TestNavigation(unittest.TestCase):
         self.assertIn("frappe.new_doc(entry.doctype", source)
         self.assertIn('label: "Purchase Receipt"', source)
         self.assertIn('description: "New Purchase Receipt"', source)
+        self.assertIn('doctype: "Purchase Receipt"', source)
         self.assertIn('["purchases", "Purchase Receipts", "purple"]', source)
+
+        access_control = (Path(__file__).parents[1] / "access_control.py").read_text(encoding="utf-8")
+        self.assertIn('"Purchase Receipt",', access_control)
 
     def test_desktop_app_uses_packaged_custom_icon(self):
         from reckon_accounts import hooks
