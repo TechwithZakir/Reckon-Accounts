@@ -94,6 +94,7 @@ def setup_roles_and_permissions():
         _ensure_role_links("Report", report)
     _ensure_role_links("Page", "voucher-entry")
     _ensure_role_links("Page", "accounts-dashboard")
+    _ensure_role_links("Page", "distribution")
     _ensure_role_links("Workspace", "Reckon Accounts")
     _ensure_role_links("Workspace", "Accounting")
 

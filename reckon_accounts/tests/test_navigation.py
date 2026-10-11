@@ -59,10 +59,26 @@ class TestNavigation(unittest.TestCase):
         self.assertEqual(items[0]["link_to"], "accounts-dashboard")
         self.assertEqual(items[1]["label"], "Accounts Dashboard")
         self.assertEqual(items[1]["link_to"], "accounts-dashboard")
+        self.assertEqual(items[2]["label"], "Distribution")
+        self.assertEqual(items[2]["link_type"], "Page")
+        self.assertEqual(items[2]["link_to"], "distribution")
         source = (Path(__file__).parents[1] / "access_control.py").read_text(encoding="utf-8")
         self.assertIn('_ensure_role_links("Page", "accounts-dashboard")', source)
+        self.assertIn('_ensure_role_links("Page", "distribution")', source)
         self.assertIn('def restore_default_desktop_home_page()', source)
         self.assertIn('frappe.db.set_default("desktop:home_page", "workspace")', source)
+
+    def test_distribution_page_is_packaged_with_analytics_endpoint(self):
+        page_dir = Path(__file__).parents[1] / "reckon_accounts/page/distribution"
+        page = json.loads((page_dir / "distribution.json").read_text(encoding="utf-8"))
+        self.assertEqual(page["page_name"], "distribution")
+        self.assertTrue((page_dir / "distribution.js").is_file())
+        self.assertTrue((page_dir / "distribution.css").is_file())
+        source = (page_dir / "distribution.js").read_text(encoding="utf-8")
+        self.assertIn("reckon_accounts.api.distribution_dashboard_data", source)
+        self.assertIn("From Date cannot be after To Date", (Path(__file__).parents[1] / "accounting/distribution_dashboard.py").read_text(encoding="utf-8"))
+        for label in ("SR / DSR Performance", "Delivery Status", "Receivables Aging", "Payables Aging"):
+            self.assertIn(label, source)
 
     def test_payment_mode_property_setter_is_server_synced(self):
         path = Path(__file__).parents[1] / "fixtures" / "property_setter.json"

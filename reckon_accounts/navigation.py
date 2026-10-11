@@ -187,6 +187,14 @@ def sidebar_document():
             "child": 0,
             "icon": "dashboard",
         },
+        {
+            "type": "Link",
+            "label": "Distribution",
+            "link_type": "Page",
+            "link_to": "distribution",
+            "child": 0,
+            "icon": "chart-line",
+        },
     ]
     for label, link_type, names in GROUPS:
         items.append(

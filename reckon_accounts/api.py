@@ -8,6 +8,7 @@ import frappe
 from reckon_accounts.accounting.adapters import LedgerAdapter, authorize_report, get_gateway
 from reckon_accounts.accounting.dashboard import build_dashboard
 from reckon_accounts.accounting.dimensions import dimension_contract
+from reckon_accounts.accounting.distribution_dashboard import build_distribution_dashboard
 from reckon_accounts.accounting.permissions import PermissionScope
 from reckon_accounts.accounting.reporting import export_csv
 from reckon_accounts.accounting.voucher_entry_dashboard import build_voucher_entry_dashboard
@@ -162,6 +163,18 @@ def dashboard_data(company, from_date, to_date):
                 "page": 1,
                 "page_size": 500,
             },
+        )
+    except ValueError as exc:
+        frappe.throw(str(exc))
+
+
+@frappe.whitelist()
+def distribution_dashboard_data(company, from_date, to_date):
+    """Return permission-aware distribution analytics for the selected period."""
+    try:
+        return build_distribution_dashboard(
+            frappe,
+            {"company": company, "from_date": from_date, "to_date": to_date},
         )
     except ValueError as exc:
         frappe.throw(str(exc))
