@@ -19,7 +19,6 @@ def build_distribution_dashboard(frappe, filters):
     end = _as_date(filters["to_date"])
     if start > end:
         raise ValueError("From Date cannot be after To Date")
-    frappe.has_permission("Company", "read", company, throw=True)
     currency = frappe.db.get_value("Company", company, "default_currency") or "BDT"
 
     sales = _list_documents(frappe, "Sales Invoice", company, start, end)
