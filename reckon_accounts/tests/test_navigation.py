@@ -76,7 +76,9 @@ class TestNavigation(unittest.TestCase):
         self.assertTrue((page_dir / "distribution.css").is_file())
         source = (page_dir / "distribution.js").read_text(encoding="utf-8")
         self.assertIn("reckon_accounts.api.distribution_dashboard_data", source)
-        self.assertIn("From Date cannot be after To Date", (Path(__file__).parents[1] / "accounting/distribution_dashboard.py").read_text(encoding="utf-8"))
+        backend = (Path(__file__).parents[1] / "accounting/distribution_dashboard.py").read_text(encoding="utf-8")
+        self.assertIn('frappe.has_permission("Company", "read", company, throw=True)', backend)
+        self.assertIn("From Date cannot be after To Date", backend)
         for label in ("SR / DSR Performance", "Delivery Status", "Receivables Aging", "Payables Aging"):
             self.assertIn(label, source)
 
