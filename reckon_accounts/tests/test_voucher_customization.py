@@ -18,8 +18,10 @@ class TestVoucherCustomization(unittest.TestCase):
         self.assertNotIn('"doctype": "Journal Entry"', source)
 
     def test_payment_entry_override_adds_direct_gl_leg(self):
-        source = (ROOT / "overrides" / "payment_entry.py").read_text(encoding="utf-8")
-        self.assertIn("class PaymentEntry(ERPNextPaymentEntry)", source)
+        controller = (ROOT / "overrides" / "payment_entry.py").read_text(encoding="utf-8")
+        self.assertIn("class PaymentEntry(*_MIXINS, ERPNextPaymentEntry)", controller)
+        source = (ROOT / "overrides" / "direct_voucher.py").read_text(encoding="utf-8")
+        self.assertIn("class DirectVoucherPaymentMixin:", source)
         self.assertIn(
             'DIRECT_SUBTYPES = {"Direct Expense": "Pay", "Direct Income": "Receive"}',
             source,

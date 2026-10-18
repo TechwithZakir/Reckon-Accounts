@@ -32,9 +32,13 @@ Implemented now:
 - `api.py`: permission-checked full export, metadata and selection searches.
 - `accounting/voucher_service.py`: compatibility API that creates direct Expense
   and Income vouchers as submitted Payment Entry documents.
-- `overrides/payment_entry.py`: opt-in Payment Entry controller behavior for the
-  Direct Expense and Direct Income subtypes, including account validation and the
-  second standard GL leg.
+- `overrides/direct_voucher.py`: opt-in Payment Entry behavior for the Direct
+  Expense and Direct Income subtypes, including account validation and the second
+  standard GL leg, as a mixin.
+- `overrides/payment_entry.py`: the registered controller. Frappe keeps only one
+  `override_doctype_class` per doctype, so it also includes Reckon Distribution's
+  Office Expense mixin when that app is on the bench (Distribution's controller
+  includes this mixin in the same order), so both apply whichever hook wins.
 - `public/js/report_filters.js`: shared filters for all 25 custom reports, including
   Cost Center, Project when supported by the GL schema, Party Type and Party;
   dimension dialog, safe formatting and drill-down.
