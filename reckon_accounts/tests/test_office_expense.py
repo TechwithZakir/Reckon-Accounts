@@ -33,8 +33,15 @@ class Doc(SimpleNamespace):
         super().__init__(**values)
         self.db_set = Mock(side_effect=lambda field, value, **kwargs: setattr(self, field, value))
 
+    def __getattr__(self, name):
+        # Like a Frappe document, an unset field reads as None.
+        if name.startswith("_"):
+            raise AttributeError(name)
+        return None
+
     def get(self, key, default=None):
-        return getattr(self, key, default)
+        value = getattr(self, key, None)
+        return default if value is None else value
 
 
 SETTINGS = Doc(
@@ -53,6 +60,17 @@ ACCOUNTS = {
     "Supplies - Co": dict(company="Co", is_group=0, disabled=0, root_type="Expense", account_type=""),
     "Rent - Co": dict(company="Co", is_group=0, disabled=0, root_type="Expense", account_type=""),
     "Cash - Co": dict(company="Co", is_group=0, disabled=0, root_type="Asset", account_type="Cash"),
+}
+COST_CENTERS = {
+    "Main - Co": dict(company="Co", is_group=0, disabled=0),
+    "Sales - Co": dict(company="Co", is_group=0, disabled=0),
+    "Co - Co": dict(company="Co", is_group=1, disabled=0),
+    "Main - Rival": dict(company="Rival", is_group=0, disabled=0),
+}
+PROJECTS = {
+    "PROJ-0001": dict(company="Co", status="Open"),
+    "PROJ-0002": dict(company="Co", status="Cancelled"),
+    "PROJ-0003": dict(company="Rival", status="Open"),
 }
 
 
@@ -96,7 +114,9 @@ class OfficeExpenseWorkflowTests(unittest.TestCase):
         if doctype == "Account":
             return SimpleNamespace(**ACCOUNTS[name]) if name in ACCOUNTS else None
         if doctype == "Cost Center":
-            return SimpleNamespace(company="Co", is_group=0, disabled=0)
+            return SimpleNamespace(**COST_CENTERS[name]) if name in COST_CENTERS else None
+        if doctype == "Project":
+            return SimpleNamespace(**PROJECTS[name]) if name in PROJECTS else None
         raise AssertionError(doctype)
 
     def _get_doc(self, doctype, name=None):
@@ -181,6 +201,62 @@ class OfficeExpenseWorkflowTests(unittest.TestCase):
         self.assertEqual(doc.payment_entry, "ACC-PAY-0001")
         self.assertEqual(doc.status, "Submitted")
 
+    def test_chosen_cost_center_and_project_are_kept(self):
+        doc = self._expense(
+            cost_center="Sales - Co",
+            project="PROJ-0001",
+            items=[
+                Doc(idx=1, expense_category="Rent - Co", amount=60),
+                Doc(idx=2, expense_category="Rent - Co", amount=40, cost_center="Main - Co"),
+            ],
+        )
+        self.workflow.validate_office_expense(doc)
+
+        self.assertEqual(doc.cost_center, "Sales - Co")
+        self.assertEqual([row.cost_center for row in doc.items], ["Sales - Co", "Main - Co"])
+
+        self.workflow.create_office_expense_payment_entry(doc)
+        values = self.payment_entry.values
+        self.assertEqual(values["cost_center"], "Sales - Co")
+        self.assertEqual(values["project"], "PROJ-0001")
+        self.assertEqual(
+            [row["cost_center"] for row in values["deductions"]], ["Sales - Co", "Main - Co"]
+        )
+
+    def test_blank_cost_center_uses_the_setup_default(self):
+        doc = self._expense(cost_center=None, project=None)
+        self.workflow.validate_office_expense(doc)
+        self.workflow.create_office_expense_payment_entry(doc)
+
+        self.assertEqual(doc.cost_center, "Main - Co")
+        self.assertIsNone(self.payment_entry.values["project"])
+
+    def test_cost_centers_must_be_active_ledgers_of_the_company(self):
+        cases = (
+            (dict(cost_center="Main - Rival"), "Cost Center must belong"),
+            (dict(cost_center="Co - Co"), "Cost Center must be an active ledger"),
+            (
+                dict(items=[Doc(idx=1, expense_category="Rent - Co", amount=5, cost_center="Main - Rival")]),
+                "Cost Center in row 1 must belong",
+            ),
+        )
+        for values, message in cases:
+            with self.subTest(message=message):
+                with self.assertRaises(ValidationError):
+                    self.workflow.validate_office_expense(self._expense(**values))
+                self.assertIn(message, self.frappe.throw.call_args.args[0])
+
+    def test_project_must_be_an_open_project_of_the_company(self):
+        for project, message in (
+            ("PROJ-0003", "Project must belong"),
+            ("PROJ-9999", "Project must belong"),
+            ("PROJ-0002", "is cancelled"),
+        ):
+            with self.subTest(project=project):
+                with self.assertRaises(ValidationError):
+                    self.workflow.validate_office_expense(self._expense(project=project))
+                self.assertIn(message, self.frappe.throw.call_args.args[0])
+
     def test_defaults_report_missing_setup(self):
         self.frappe.db.exists.return_value = False
 
@@ -195,6 +271,7 @@ class OfficeExpenseWorkflowTests(unittest.TestCase):
         self.assertEqual(result["default_expense_account"], "Supplies - Co")
         self.assertEqual(result["categories"], ["Office Rent", "Office Supplies"])
         self.assertEqual(result["payment_methods"], ["Cash"])
+        self.assertEqual(result["default_cost_center"], "Main - Co")
 
     def test_defaults_require_access_to_the_company(self):
         self.frappe.has_permission.side_effect = PermissionError
@@ -215,6 +292,27 @@ class OfficeExpenseWorkflowTests(unittest.TestCase):
             self.frappe.get_all.call_args.kwargs["filters"]["name"],
             ["in", ["Rent - Co", "Supplies - Co"]],
         )
+
+        self.workflow.get_office_expense_cost_centers("Cost Center", "", "name", 0, 20, {"company": "Co"})
+        self.assertEqual(
+            self.frappe.get_all.call_args.kwargs["filters"],
+            {"company": "Co", "is_group": 0, "disabled": 0},
+        )
+
+        self.workflow.get_office_expense_projects("Project", "", "name", 0, 20, {"company": "Co"})
+        self.assertEqual(
+            self.frappe.get_all.call_args.kwargs["filters"],
+            {"company": "Co", "status": ["!=", "Cancelled"]},
+        )
+
+    def test_cost_center_and_project_searches_require_company_access(self):
+        self.frappe.has_permission.side_effect = PermissionError
+        for search in (
+            self.workflow.get_office_expense_cost_centers,
+            self.workflow.get_office_expense_projects,
+        ):
+            with self.subTest(search=search.__name__), self.assertRaises(PermissionError):
+                search("Cost Center", "", "name", 0, 20, {"company": "Rival"})
 
 
 class OfficeExpenseDoctypeTests(unittest.TestCase):
@@ -253,7 +351,31 @@ class OfficeExpenseDoctypeTests(unittest.TestCase):
         source = (DOCTYPES / "office_expense" / "office_expense.js").read_text(encoding="utf-8")
         self.assertIn("reckon_accounts.office_expense.get_office_expense_defaults", source)
         self.assertIn("args: { company: frm.doc.company || null }", source)
-        self.assertEqual(source.count("filters: { company: frm.doc.company }"), 2)
+        self.assertEqual(source.count("filters: { company: frm.doc.company }"), 5)
+        for query in (
+            "get_office_expense_cost_centers",
+            "get_office_expense_projects",
+        ):
+            self.assertIn(f"reckon_accounts.office_expense.{query}", source)
+        self.assertIn('frm.set_query("cost_center", "items"', source)
+
+    def test_cost_center_and_project_are_editable_fields(self):
+        expense = self._json("office_expense")
+        fields = {row["fieldname"]: row for row in expense["fields"]}
+        for fieldname, options in (("cost_center", "Cost Center"), ("project", "Project")):
+            with self.subTest(field=fieldname):
+                self.assertEqual(fields[fieldname]["fieldtype"], "Link")
+                self.assertEqual(fields[fieldname]["options"], options)
+                self.assertFalse(fields[fieldname].get("hidden"))
+                self.assertFalse(fields[fieldname].get("read_only"))
+                self.assertFalse(fields[fieldname].get("reqd"))
+        order = expense["field_order"]
+        self.assertEqual(order[order.index("payment_method") + 1 :][:2], ["cost_center", "project"])
+        self.assertEqual(sorted(order), sorted(fields))
+
+        item = {row["fieldname"]: row for row in self._json("office_expense_item")["fields"]}
+        self.assertFalse(item["cost_center"].get("hidden"))
+        self.assertFalse(item["cost_center"].get("read_only"))
 
 
 class OfficeExpenseNavigationTests(unittest.TestCase):

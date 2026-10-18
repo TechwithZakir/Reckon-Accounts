@@ -10,6 +10,8 @@
   "company",
   "posting_date",
   "payment_method",
+  "cost_center",
+  "project",
   "column_break_1",
   "payee",
   "reference_no",
@@ -22,7 +24,6 @@
   "total_amount",
   "status",
   "payment_account",
-  "cost_center",
   "payment_entry",
   "journal_entry",
   "amended_from"
@@ -59,6 +60,19 @@
    "options": "Mode of Payment",
    "reqd": 1,
    "in_list_view": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center",
+   "description": "Leave blank to use the default from Office Expense Setup."
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
   },
   {
    "fieldname": "column_break_1",
@@ -120,14 +134,6 @@
    "fieldtype": "Link",
    "label": "Payment Account",
    "options": "Account",
-   "hidden": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "cost_center",
-   "fieldtype": "Link",
-   "label": "Cost Center",
-   "options": "Cost Center",
    "hidden": 1,
    "read_only": 1
   },

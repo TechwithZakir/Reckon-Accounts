@@ -28,7 +28,7 @@ def validate_office_expense_settings(doc: Document) -> None:
         frappe.throw(_("Default Expense Category must be an enabled category in this setup."))
     if doc.default_payment_method not in payment_methods:
         frappe.throw(_("Default Paid By must be an enabled payment method in this setup."))
-    _validate_cost_center(doc.company, doc.default_cost_center)
+    _validate_cost_center(doc.company, doc.default_cost_center, _("Default Cost Center"))
 
     for category, row in categories.items():
         _validate_expense_account(doc.company, row.expense_account, category)
@@ -56,9 +56,12 @@ def validate_office_expense(doc: Document) -> None:
         )
 
     doc.payment_account = payment_setup.payment_account
-    doc.cost_center = settings.default_cost_center
+    if not doc.cost_center:
+        doc.cost_center = settings.default_cost_center
     _validate_payment_account(doc.company, doc.payment_account, doc.payment_method)
-    _validate_cost_center(doc.company, doc.cost_center)
+    _validate_cost_center(doc.company, doc.cost_center, _("Cost Center"))
+    if doc.get("project"):
+        _validate_project(doc.company, doc.project)
 
     total = 0.0
     if not doc.items:
@@ -79,7 +82,12 @@ def validate_office_expense(doc: Document) -> None:
         if flt(row.amount) <= 0:
             frappe.throw(_("Expense amount in row {0} must be greater than zero.").format(row.idx))
         row.expense_account = category_setup.expense_account
-        row.cost_center = doc.cost_center
+        if not row.cost_center:
+            row.cost_center = doc.cost_center
+        elif row.cost_center != doc.cost_center:
+            _validate_cost_center(
+                doc.company, row.cost_center, _("Cost Center in row {0}").format(row.idx)
+            )
         _validate_expense_account(doc.company, row.expense_account, category_setup.category)
         total += flt(row.amount)
 
@@ -111,6 +119,8 @@ def create_office_expense_payment_entry(doc: Document) -> None:
             "paid_amount": flt(doc.total_amount),
             "received_amount": flt(doc.total_amount),
             "cost_center": doc.cost_center,
+            # ERPNext copies the Payment Entry's project to every GL line.
+            "project": doc.get("project"),
             "reference_no": doc.reference_no or doc.name,
             "reference_date": doc.reference_date or doc.posting_date,
             "custom_remarks": 1,
@@ -168,6 +178,7 @@ def get_office_expense_defaults(company: str | None = None) -> dict:
         "default_expense_category": settings.default_expense_category,
         "default_expense_account": default_category.expense_account,
         "default_payment_method": settings.default_payment_method,
+        "default_cost_center": settings.default_cost_center,
         "categories": sorted(categories),
         "expense_accounts": sorted({row.expense_account for row in categories.values()}),
         "payment_methods": sorted(_payment_method_map(settings)),
@@ -210,6 +221,48 @@ def get_office_expense_categories(doctype, txt, searchfield, start, page_len, fi
             "account_name": ["like", f"%{txt}%"],
         },
         fields=["name", "account_name"],
+        start=start,
+        limit_start=start,
+        limit_page_length=page_len,
+        as_list=True,
+    )
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_office_expense_cost_centers(doctype, txt, searchfield, start, page_len, filters):
+    """Return active ledger cost centers of the form Company."""
+    company = _resolve_company((filters or {}).get("company"), required=True)
+    return frappe.get_all(
+        "Cost Center",
+        filters={"company": company, "is_group": 0, "disabled": 0},
+        or_filters={
+            "name": ["like", f"%{txt}%"],
+            "cost_center_name": ["like", f"%{txt}%"],
+        },
+        fields=["name", "cost_center_name"],
+        order_by="lft asc",
+        start=start,
+        limit_start=start,
+        limit_page_length=page_len,
+        as_list=True,
+    )
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_office_expense_projects(doctype, txt, searchfield, start, page_len, filters):
+    """Return the form Company's projects that are not cancelled."""
+    company = _resolve_company((filters or {}).get("company"), required=True)
+    return frappe.get_all(
+        "Project",
+        filters={"company": company, "status": ["!=", "Cancelled"]},
+        or_filters={
+            "name": ["like", f"%{txt}%"],
+            "project_name": ["like", f"%{txt}%"],
+        },
+        fields=["name", "project_name"],
+        order_by="modified desc",
         start=start,
         limit_start=start,
         limit_page_length=page_len,
@@ -305,11 +358,19 @@ def _get_account(company: str, account_name: str, label: str):
     return account
 
 
-def _validate_cost_center(company: str, cost_center_name: str) -> None:
+def _validate_cost_center(company: str, cost_center_name: str, label: str) -> None:
     cost_center = frappe.db.get_value(
         "Cost Center", cost_center_name, ["company", "is_group", "disabled"], as_dict=True
     )
     if not cost_center or cost_center.company != company:
-        frappe.throw(_("Default Cost Center must belong to the selected Company."))
+        frappe.throw(_("{0} must belong to the selected Company.").format(label))
     if cost_center.is_group or cost_center.disabled:
-        frappe.throw(_("Default Cost Center must be an active ledger cost center."))
+        frappe.throw(_("{0} must be an active ledger cost center.").format(label))
+
+
+def _validate_project(company: str, project_name: str) -> None:
+    project = frappe.db.get_value("Project", project_name, ["company", "status"], as_dict=True)
+    if not project or project.company != company:
+        frappe.throw(_("Project must belong to the selected Company."))
+    if project.status == "Cancelled":
+        frappe.throw(_("Project {0} is cancelled.").format(project_name))

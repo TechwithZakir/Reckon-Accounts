@@ -46,8 +46,7 @@
    "fieldtype": "Link",
    "label": "Cost Center",
    "options": "Cost Center",
-   "hidden": 1,
-   "read_only": 1
+   "description": "Leave blank to use the expense's Cost Center."
   }
  ]
 }
