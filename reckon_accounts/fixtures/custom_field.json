@@ -75,5 +75,18 @@
   "fieldname": "custom_column_break_more_information",
   "fieldtype": "Column Break",
   "insert_after": "print_heading"
+ },
+ {
+  "doctype": "Custom Field",
+  "dt": "Payment Entry",
+  "name": "Payment Entry-rd_office_expense",
+  "fieldname": "rd_office_expense",
+  "fieldtype": "Link",
+  "insert_after": "custom_voucher_subtype",
+  "label": "Office Expense",
+  "options": "Office Expense",
+  "hidden": 1,
+  "read_only": 1,
+  "no_copy": 1
  }
 ]

@@ -50,6 +50,7 @@ fixtures = [
                     "Payment Entry-custom_column_break_transaction",
                     "Payment Entry-custom_column_break_dimensions",
                     "Payment Entry-custom_column_break_more_information",
+                    "Payment Entry-rd_office_expense",
                 ],
             ]
         ],

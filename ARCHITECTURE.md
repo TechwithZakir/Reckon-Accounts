@@ -35,10 +35,17 @@ Implemented now:
 - `overrides/direct_voucher.py`: opt-in Payment Entry behavior for the Direct
   Expense and Direct Income subtypes, including account validation and the second
   standard GL leg, as a mixin.
+- `office_expense.py` and the `Office Expense` / `Office Expense Settings` doctypes:
+  a compact expense form. Each Company maps friendly categories and "paid by"
+  choices to its own ledgers; submitting posts one no-party Pay Payment Entry whose
+  deductions carry the expense debits. Company access uses standard permissions;
+  SaaS apps add tenant isolation through their own hooks. Moved here from Reckon
+  Distribution, which now requires this app.
+- `overrides/office_expense_payment.py`: the Payment Entry mixin that allows that
+  balanced, no-party Pay entry only when it is linked to its Office Expense.
 - `overrides/payment_entry.py`: the registered controller. Frappe keeps only one
-  `override_doctype_class` per doctype, so it also includes Reckon Distribution's
-  Office Expense mixin when that app is on the bench (Distribution's controller
-  includes this mixin in the same order), so both apply whichever hook wins.
+  `override_doctype_class` per doctype, so every Reckon Payment Entry behavior is a
+  mixin composed here.
 - `public/js/report_filters.js`: shared filters for all 25 custom reports, including
   Cost Center, Project when supported by the GL schema, Party Type and Party;
   dimension dialog, safe formatting and drill-down.

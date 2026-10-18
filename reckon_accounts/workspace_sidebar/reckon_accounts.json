@@ -48,6 +48,28 @@
   },
   {
    "type": "Section Break",
+   "label": "Office Expenses",
+   "child": 0,
+   "collapsible": 1,
+   "keep_closed": 0,
+   "indent": 1
+  },
+  {
+   "type": "Link",
+   "label": "Office Expenses",
+   "link_type": "DocType",
+   "link_to": "Office Expense",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Office Expense Setup",
+   "link_type": "DocType",
+   "link_to": "Office Expense Settings",
+   "child": 1
+  },
+  {
+   "type": "Section Break",
    "label": "Ledgers",
    "child": 0,
    "collapsible": 1,
@@ -416,6 +438,13 @@
    "label": "Purchase Invoice",
    "link_type": "DocType",
    "link_to": "Purchase Invoice",
+   "child": 1
+  },
+  {
+   "type": "Link",
+   "label": "Purchase Receipt",
+   "link_type": "DocType",
+   "link_to": "Purchase Receipt",
    "child": 1
   },
   {

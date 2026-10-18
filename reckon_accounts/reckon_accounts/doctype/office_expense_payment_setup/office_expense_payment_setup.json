@@ -1,0 +1,37 @@
+{
+ "doctype": "DocType",
+ "name": "Office Expense Payment Setup",
+ "module": "Reckon Accounts",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "payment_method",
+  "payment_account",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "payment_method",
+   "fieldtype": "Link",
+   "label": "Paid By",
+   "options": "Mode of Payment",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "payment_account",
+   "fieldtype": "Link",
+   "label": "Payment Account",
+   "options": "Account",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "default": 1,
+   "in_list_view": 1
+  }
+ ]
+}

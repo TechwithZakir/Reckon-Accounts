@@ -1,0 +1,36 @@
+{
+ "doctype": "DocType",
+ "name": "Office Expense Category Setup",
+ "module": "Reckon Accounts",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "category",
+  "expense_account",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "category",
+   "fieldtype": "Data",
+   "label": "Expense Category",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "expense_account",
+   "fieldtype": "Link",
+   "label": "Expense Account",
+   "options": "Account",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "default": 1,
+   "in_list_view": 1
+  }
+ ]
+}
