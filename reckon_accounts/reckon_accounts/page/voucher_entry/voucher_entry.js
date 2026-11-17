@@ -19,6 +19,7 @@ frappe.pages["voucher-entry"].on_page_load = function (wrapper) {
         {key: "F7", label: "Journal", description: "New Journal Entry", icon: "=", tone: "blue", doctype: "Journal Entry", defaults: {voucher_type: "Journal Entry"}},
         {key: "F8", label: "Sales", description: "New Sales Entry", icon: "&#9632;", tone: "orange", doctype: "Sales Invoice", defaults: {}},
         {key: "F9", label: "Purchase Receipt", description: "New Purchase Receipt", icon: "&#9632;", tone: "purple", doctype: "Purchase Receipt", defaults: {}},
+        {key: "F2", label: "Office Expense", description: "New Office Expense", icon: "&#9783;", tone: "teal", doctype: "Office Expense", defaults: {}},
     ];
     const reports = ["Day Book", "Cash Book", "Bank Book", "Party Ledger", "General Ledger Custom", "Payment Register", "Receipt Register", "Trial Balance", "Balance Sheet", "Profit and Loss Statement", "Trial Balance for Party", "Item-wise Sales Register", "Item-wise Purchase Register", "Sales Register", "Purchase Register"];
     const actions = {};

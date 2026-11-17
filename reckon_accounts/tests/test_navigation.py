@@ -180,3 +180,11 @@ class TestNavigation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class VoucherEntryOfficeExpenseTileTests(unittest.TestCase):
+    def test_the_voucher_entry_page_has_an_office_expense_tile_that_opens_a_new_office_expense(self):
+        path = Path(__file__).parents[1] / "reckon_accounts/page/voucher_entry/voucher_entry.js"
+        source = path.read_text(encoding="utf-8")
+        self.assertIn('label: "Office Expense", description: "New Office Expense"', source)
+        self.assertIn('doctype: "Office Expense"', source)
