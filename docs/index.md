@@ -8,6 +8,8 @@ lang: en
 
 # Tally-Style Accounting Reports on ERPNext: Ledgers, Day Books, Registers and Funds Flow
 
+![Banner](banner.svg)
+
 Accountants in Bangladesh who grew up on Tally expect ledgers, day books, registers and group summaries at their fingertips. **Reckon Accounts** by Reckon Technologies Ltd. adds Tally-style accounting reports and navigation on top of ERPNext, without creating a second accounting engine.
 
 ## Detailed features
