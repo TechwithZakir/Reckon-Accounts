@@ -55,7 +55,7 @@ ReckonERP is the cloud ERP from Reckon Technologies Ltd., with accounting (Recko
 
 ## Related reading
 
-- [ERP software buyers guide](https://app.reckon.tech/blog/erp-software-buyers-guide)
+- [ERP software buyers guide](https://app.reckon.tech/blog/erp-software-in-bangladesh-buyers-guide)
 - [How to choose an ERP provider in Bangladesh](https://app.reckon.tech/blog/how-to-choose-an-erp-provider-in-bangladesh)
 - [ReckonERP blog](https://app.reckon.tech/blog) on Hashnode: [reckonerp.hashnode.dev](https://reckonerp.hashnode.dev)
 - Reckon Technologies Ltd. on [LinkedIn](https://bd.linkedin.com/company/reckontech)
